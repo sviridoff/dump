@@ -1,0 +1,12 @@
+<html>
+  <head></head>
+  <body>
+    <%- include('./head'); %>
+    <h1>Hello <%= text %></h1>
+    <div id="parent-div"></div>
+    <button data-hx-post="/clicked" data-hx-trigger="click" data-hx-target="#parent-div" data-hx-swap="innerHTML">
+      Click Me!
+    </button>
+    <script src="public/htmx@1.6.1.js" type="module" async></script>
+  </body>
+</html>
