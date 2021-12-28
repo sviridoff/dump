@@ -6,12 +6,40 @@ import fastifyCompress from 'fastify-compress';
 import ejs from 'ejs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { kado, Container, Token } from '@daisugi/kado';
+
+import {
+  buildDIManifest,
+  diRoutesManifestTokens,
+} from './buildDIManifest.js';
+import { Route } from './types/Route.js';
 
 const __dirname = path.dirname(
   fileURLToPath(import.meta.url),
 );
 
+function registerRoutes(
+  server: FastifyInstance,
+  container: Container,
+  tokens: Token[],
+) {
+  tokens.forEach((token) => {
+    const routes: Route[] = container.resolve(token);
+
+    routes.forEach((route) => {
+      const method = route.method.toLowerCase();
+
+      // @ts-ignore
+      server[method](route.path, route.handler);
+    });
+  });
+}
+
 async function start() {
+  const { container } = kado();
+
+  container.register(buildDIManifest());
+
   const server: FastifyInstance = Fastify({
     logger: true,
   });
@@ -31,19 +59,10 @@ async function start() {
   server.register(fastifyStatic, {
     root: path.join(__dirname, '../public'),
     prefix: '/public/',
+    preCompressed: true,
   });
 
-  server.get('/', async (_, reply) => {
-    return reply.view('components/root.ejs', {
-      text: 'text',
-    });
-  });
-
-  server.post('/clicked', async (request, reply) => {
-    console.log(request.body);
-
-    return reply.view('components/clicked.ejs', {});
-  });
+  registerRoutes(server, container, diRoutesManifestTokens);
 
   try {
     await server.listen(3001);

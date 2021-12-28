@@ -10,7 +10,7 @@ export default {
     ecmaVersion: 2020, // Allows for the parsing of modern ECMAScript features.
     sourceType: 'module', // Allows for the use of imports.
   },
-  ignorePatterns: ['dist'],
+  ignorePatterns: ['dist', 'public'],
   rules: {
     curly: 'warn',
   },
