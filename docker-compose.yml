@@ -1,0 +1,43 @@
+version: '3.8'
+
+services:
+  app:
+    # user: $USER
+    container_name: app
+    build: ./
+    depends_on:
+      - postgres
+    environment:
+      NODE_ENV: development
+      POSTGRE_SQL_HOST: postgres
+      POSTGRE_SQL_PORT: 5432
+      POSTGRE_SQL_USER: postgres
+      POSTGRE_SQL_PASSWORD: 1234
+      POSTGRE_SQL_DATABASE_NAME: svirisama
+    ports:
+      - '3001:3001'
+    volumes:
+      - '.:/usr/src/app'
+      # Don't sync the node_modules directory back to the client.
+      - '/usr/src/app/node_modules'
+    entrypoint:
+      - 'sh'
+      - '-c'
+      - 'yarn run watch:server'
+
+  postgres:
+    container_name: postgres
+    image: postgres:10.4
+    ports:
+      - '5432:5432'
+    volumes:
+      - ./postgresdata:/var/lib/postgresql/data
+      - ./src/migrations/dbinit.sql:/docker-entrypoint-initdb.d/dbinit.sql
+    restart: always
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: 1234
+      POSTGRES_DB: svirisama
+
+volumes:
+  db-data:

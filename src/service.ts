@@ -88,7 +88,7 @@ async function startWEB() {
   registerRoutes(server, container, diRoutesManifestTokens);
 
   try {
-    await server.listen(3001);
+    await server.listen(3001, '0.0.0.0');
   } catch (error) {
     server.log.error(error);
 

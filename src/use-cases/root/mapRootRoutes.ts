@@ -8,7 +8,7 @@ export function mapRootRoutes(
     {
       method: 'GET',
       path: '/',
-      handler: rootController.handler,
+      handler: rootController.handler.bind(rootController),
     },
   ];
 }

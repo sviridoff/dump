@@ -8,7 +8,9 @@ export function mapClickedRoutes(
     {
       method: 'POST',
       path: '/clicked',
-      handler: clickedController.handler,
+      handler: clickedController.handler.bind(
+        clickedController,
+      ),
     },
   ];
 }
