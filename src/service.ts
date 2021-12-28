@@ -1,4 +1,8 @@
-import Fastify, { FastifyInstance } from 'fastify';
+import Fastify, {
+  FastifyInstance,
+  FastifyRequest,
+  FastifyReply,
+} from 'fastify';
 import pointOfView from 'point-of-view';
 import fastifyStatic from 'fastify-static';
 import fastifyFormbody from 'fastify-formbody';
@@ -12,6 +16,7 @@ import {
   buildDIManifest,
   diRoutesManifestTokens,
 } from './buildDIManifest.js';
+import { validateEnvs } from './validateEnvs.js';
 import { Route } from './types/Route.js';
 
 const __dirname = path.dirname(
@@ -21,24 +26,42 @@ const __dirname = path.dirname(
 function registerRoutes(
   server: FastifyInstance,
   container: Container,
-  tokens: Token[],
+  diRoutesManifestTokens: Token[],
 ) {
-  tokens.forEach((token) => {
-    const routes: Route[] = container.resolve(token);
+  diRoutesManifestTokens.forEach(
+    (diRoutesManifestToken) => {
+      const routes: Route[] = container.resolve(
+        diRoutesManifestToken,
+      );
 
-    routes.forEach((route) => {
-      const method = route.method.toLowerCase();
+      routes.forEach((route) => {
+        const method = route.method.toLowerCase();
 
-      // @ts-ignore
-      server[method](route.path, route.handler);
-    });
-  });
+        // @ts-ignore
+        server[method](
+          route.path,
+          async (
+            _: FastifyRequest,
+            reply: FastifyReply,
+          ) => {
+            const response = await route.handler({});
+
+            const { templatePath, templateData } =
+              response.value;
+
+            return reply.view(templatePath, templateData);
+          },
+        );
+      });
+    },
+  );
 }
 
-async function start() {
+async function startWEB() {
   const { container } = kado();
 
-  container.register(buildDIManifest());
+  const envs = validateEnvs();
+  container.register(buildDIManifest(envs));
 
   const server: FastifyInstance = Fastify({
     logger: true,
@@ -73,4 +96,4 @@ async function start() {
   }
 }
 
-start();
+startWEB();

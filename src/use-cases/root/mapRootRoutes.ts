@@ -1,8 +1,8 @@
-import { RootController } from './RootController.js';
 import { Route } from '../../types/Route.js';
+import { Controller } from '../../types/Controller.js';
 
 export function mapRootRoutes(
-  rootController: RootController,
+  rootController: Controller,
 ): Route[] {
   return [
     {

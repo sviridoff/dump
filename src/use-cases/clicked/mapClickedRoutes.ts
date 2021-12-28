@@ -1,8 +1,8 @@
-import { ClickedController } from './ClickedController.js';
 import { Route } from '../../types/Route.js';
+import { Controller } from '../../types/Controller.js';
 
 export function mapClickedRoutes(
-  clickedController: ClickedController,
+  clickedController: Controller,
 ): Route[] {
   return [
     {
