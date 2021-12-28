@@ -3,13 +3,12 @@ import { ManifestItem } from '@daisugi/kado';
 // Clients.
 import { PostgreSQLClient } from './clients/PostgreSQLClient.js';
 
-// Root.
-import { RootController } from './use-cases/root/RootController.js';
-import { mapRootRoutes } from './use-cases/root/mapRootRoutes.js';
+// Stores.
+import { ItemStore } from './stores/ItemStore.js';
 
-// Clicked.
-import { ClickedController } from './use-cases/clicked/ClickedController.js';
-import { mapClickedRoutes } from './use-cases/clicked/mapClickedRoutes.js';
+// Show item.
+import { ItemController } from './use-cases/show-item/ItemController.js';
+import { mapItemRoutes } from './use-cases/show-item/mapItemRoutes.js';
 
 export const diToken = {
   // Clients.
@@ -19,17 +18,15 @@ export const diToken = {
   postgreSQLUser: Symbol('postgreSQLUser'),
   postgreSQLPassword: Symbol('postgreSQLPassword'),
   postgreSQLDatabaseName: Symbol('postgreSQLDatabaseName'),
-  // Root.
-  RootController: Symbol('RootController'),
-  mapRootRoutes: Symbol('mapRootRoutes'),
-  // Clicked.
-  ClickedController: Symbol('ClickedController'),
-  mapClickedRoutes: Symbol('mapClickedRoutes'),
+  // Stores.
+  ItemStore: Symbol('ItemStore'),
+  // Show item.
+  ItemController: Symbol('ItemController'),
+  mapItemRoutes: Symbol('mapItemRoutes'),
 };
 
 export const diRoutesManifestTokens = [
-  diToken.mapRootRoutes,
-  diToken.mapClickedRoutes,
+  diToken.mapItemRoutes,
 ];
 
 export function buildDIManifest(
@@ -68,26 +65,22 @@ export function buildDIManifest(
         diToken.postgreSQLDatabaseName,
       ],
     },
-    // Root.
+    // Stores.
     {
-      token: diToken.RootController,
-      useClass: RootController,
+      token: diToken.ItemStore,
+      useClass: ItemStore,
       params: [diToken.PostgreSQLClient],
     },
+    // Show item.
     {
-      token: diToken.mapRootRoutes,
-      useFactory: mapRootRoutes,
-      params: [diToken.RootController],
-    },
-    // Clicked.
-    {
-      token: diToken.ClickedController,
-      useClass: ClickedController,
+      token: diToken.ItemController,
+      useClass: ItemController,
+      params: [diToken.ItemStore],
     },
     {
-      token: diToken.mapClickedRoutes,
-      useFactory: mapClickedRoutes,
-      params: [diToken.ClickedController],
+      token: diToken.mapItemRoutes,
+      useFactory: mapItemRoutes,
+      params: [diToken.ItemController],
     },
   ];
 }

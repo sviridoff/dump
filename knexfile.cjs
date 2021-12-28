@@ -7,17 +7,14 @@ module.exports = {
       host: 'postgres',
       port: 5432,
       user: 'postgres',
-      password: 'newPassword',
+      password: '1234',
       database: 'svirisama',
     },
     migrations: {
-      directory: path.resolve(__dirname, '/db/migrations'),
+      directory: `${__dirname}/db/migrations`,
     },
     seeds: {
-      directory: path.resolve(
-        __dirname,
-        '/db/seeds/development',
-      ),
+      directory: `${__dirname}/db/seeds/development`,
     },
   },
 };

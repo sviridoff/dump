@@ -11,6 +11,8 @@ exports.up = async function (knex) {
         .primary()
         .defaultTo(knex.raw('uuid_generate_v4()'));
       table.string('name').notNullable();
+      table.string('slug').notNullable();
+      table.uuid('user_id').notNullable();
       table.specificType('item_ids', 'text ARRAY');
       table
         .boolean('is_private')

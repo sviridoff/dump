@@ -17,7 +17,7 @@ import {
   diRoutesManifestTokens,
 } from './buildDIManifest.js';
 import { validateEnvs } from './validateEnvs.js';
-import { Route } from './types/Route.js';
+import { ServiceRoute } from './types/ServiceRoute.js';
 
 const __dirname = path.dirname(
   fileURLToPath(import.meta.url),
@@ -30,7 +30,7 @@ function registerRoutes(
 ) {
   diRoutesManifestTokens.forEach(
     (diRoutesManifestToken) => {
-      const routes: Route[] = container.resolve(
+      const routes: ServiceRoute[] = container.resolve(
         diRoutesManifestToken,
       );
 
@@ -41,10 +41,15 @@ function registerRoutes(
         server[method](
           route.path,
           async (
-            _: FastifyRequest,
+            request: FastifyRequest,
             reply: FastifyReply,
           ) => {
-            const response = await route.handler({});
+            const response = await route.handler({
+              params: request.params as Record<
+                string,
+                unknown
+              >,
+            });
 
             const { templatePath, templateData } =
               response.value;
