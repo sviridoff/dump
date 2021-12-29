@@ -1,12 +1,14 @@
 <%- include('../../templates/header'); -%>
 
 <h1><%= user.username %>/<%= item.name %></h1>
-<ul>
-  <% item.items.forEach(function(item) { %>
-    <li>
-      <a href="/<%= user.username %>/<%= item.slug %>"><%= item.name %></a>
-    </li>
-  <% }); %>
-</ul>
+<% if (item.items.length){ %>
+  <ul>
+    <% item.items.forEach(function(item) { %>
+      <li>
+        <a href="/<%= user.username %>/<%= item.slug %>"><%= item.name %></a>
+      </li>
+    <% }); %>
+  </ul>
+<% } %>
 
 <%- include('../../templates/footer'); -%>

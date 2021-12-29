@@ -5,26 +5,6 @@ exports.up = async function (knex) {
   );
 
   return knex.schema
-    .createTable('item', function (table) {
-      table
-        .uuid('id')
-        .primary()
-        .defaultTo(knex.raw('uuid_generate_v4()'));
-      table.string('name').notNullable();
-      table.string('slug').notNullable();
-      table.uuid('user_id').notNullable();
-      table.specificType('item_ids', 'text ARRAY');
-      table
-        .boolean('is_private')
-        .notNullable()
-        .defaultTo(false);
-      table
-        .timestamp('created_at')
-        .defaultTo(knex.fn.now());
-      table
-        .timestamp('updated_at')
-        .defaultTo(knex.fn.now());
-    })
     .createTable('user', function (table) {
       table
         .uuid('id')
@@ -39,9 +19,60 @@ exports.up = async function (knex) {
       table
         .timestamp('updated_at')
         .defaultTo(knex.fn.now());
+    })
+    .createTable('item', function (table) {
+      table
+        .uuid('id')
+        .primary()
+        .defaultTo(knex.raw('uuid_generate_v4()'));
+      table.string('name').notNullable();
+      table.string('slug').notNullable();
+      table
+        .uuid('user_id')
+        .notNullable()
+        .references('id')
+        .inTable('user')
+        .onDelete('CASCADE');
+      table
+        .boolean('is_private')
+        .notNullable()
+        .defaultTo(false);
+      table
+        .timestamp('created_at')
+        .defaultTo(knex.fn.now());
+      table
+        .timestamp('updated_at')
+        .defaultTo(knex.fn.now());
+    })
+    .createTable('item_item', function (table) {
+      table
+        .uuid('id')
+        .primary()
+        .defaultTo(knex.raw('uuid_generate_v4()'));
+      table
+        .uuid('parent_item_id')
+        .notNullable()
+        .references('id')
+        .inTable('item')
+        .onDelete('CASCADE');
+      table
+        .uuid('child_item_id')
+        .notNullable()
+        .references('id')
+        .inTable('item')
+        .onDelete('CASCADE');
+      table
+        .timestamp('created_at')
+        .defaultTo(knex.fn.now());
+      table
+        .timestamp('updated_at')
+        .defaultTo(knex.fn.now());
     });
 };
 
 exports.down = function (knex) {
-  return knex.schema.dropTable('item').dropTable('user');
+  return knex.schema
+    .dropTable('item_item')
+    .dropTable('user')
+    .dropTable('item');
 };

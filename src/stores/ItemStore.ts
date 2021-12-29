@@ -72,17 +72,17 @@ export class ItemStore {
         });
       }
 
-      const childItemIds = dbMainItem[0].item_ids;
+      const dbChildItemIds = this.postgreSQLClient
+        .get()
+        .where({ parent_item_id: dbMainItem[0].id })
+        .select('child_item_id')
+        .from<string>('item_item');
 
-      let dbChildItems: DBItem[] = [];
-
-      if (childItemIds?.length) {
-        dbChildItems = await this.postgreSQLClient
-          .get()
-          .whereIn('id', childItemIds)
-          .select('*')
-          .from<DBItem>('item');
-      }
+      const dbChildItems = await this.postgreSQLClient
+        .get()
+        .whereIn('id', dbChildItemIds)
+        .select('*')
+        .from<DBItem>('item');
 
       const item = toItem(dbMainItem[0], dbChildItems);
 
