@@ -8,8 +8,12 @@ import { ItemStore } from './stores/ItemStore.js';
 import { UserStore } from './stores/UserStore.js';
 
 // Show item.
-import { ItemController } from './use-cases/show-item/ItemController.js';
-import { mapItemRoutes } from './use-cases/show-item/mapItemRoutes.js';
+import { ShowItemController } from './use-cases/show-item/ShowItemController.js';
+import { mapShowItemRoutes } from './use-cases/show-item/mapShowItemRoutes.js';
+
+// New item.
+import { NewItemController } from './use-cases/new-item/NewItemController.js';
+import { mapNewItemRoutes } from './use-cases/new-item/mapNewItemRoutes.js';
 
 export const diToken = {
   // Clients.
@@ -23,12 +27,16 @@ export const diToken = {
   ItemStore: Symbol('ItemStore'),
   UserStore: Symbol('UserStore'),
   // Show item.
-  ItemController: Symbol('ItemController'),
-  mapItemRoutes: Symbol('mapItemRoutes'),
+  ShowItemController: Symbol('ShowItemController'),
+  mapShowItemRoutes: Symbol('mapShowItemRoutes'),
+  // New item.
+  NewItemController: Symbol('NewItemController'),
+  mapNewItemRoutes: Symbol('mapNewItemRoutes'),
 };
 
 export const diRoutesManifestTokens = [
-  diToken.mapItemRoutes,
+  diToken.mapShowItemRoutes,
+  diToken.mapNewItemRoutes,
 ];
 
 export function buildDIManifest(
@@ -80,14 +88,25 @@ export function buildDIManifest(
     },
     // Show item.
     {
-      token: diToken.ItemController,
-      useClass: ItemController,
+      token: diToken.ShowItemController,
+      useClass: ShowItemController,
       params: [diToken.ItemStore, diToken.UserStore],
     },
     {
-      token: diToken.mapItemRoutes,
-      useFactory: mapItemRoutes,
-      params: [diToken.ItemController],
+      token: diToken.mapShowItemRoutes,
+      useFactory: mapShowItemRoutes,
+      params: [diToken.ShowItemController],
+    },
+    // New item.
+    {
+      token: diToken.NewItemController,
+      useClass: NewItemController,
+      params: [diToken.ItemStore, diToken.UserStore],
+    },
+    {
+      token: diToken.mapNewItemRoutes,
+      useFactory: mapNewItemRoutes,
+      params: [diToken.NewItemController],
     },
   ];
 }

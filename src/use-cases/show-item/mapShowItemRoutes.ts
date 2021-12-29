@@ -1,14 +1,16 @@
 import { ServiceRoute } from '../../types/ServiceRoute.js';
 import { ServiceController } from '../../types/ServiceController.js';
 
-export function mapItemRoutes(
-  itemController: ServiceController,
+export function mapShowItemRoutes(
+  showItemController: ServiceController,
 ): ServiceRoute[] {
   return [
     {
       method: 'GET',
       path: '/:username/:itemSlug',
-      handler: itemController.handler.bind(itemController),
+      handler: showItemController.handler.bind(
+        showItemController,
+      ),
     },
   ];
 }
