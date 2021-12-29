@@ -4,17 +4,27 @@ import {
   ServiceController,
   ServiceReply,
   ServiceRequest,
-} from '../../types/ServiceController';
-import { ItemStore } from '../../stores/ItemStore';
+} from '../../types/ServiceController.js';
+import { ItemStore } from '../../stores/ItemStore.js';
+import { UserStore } from '../../stores/UserStore.js';
 
 export class ItemController implements ServiceController {
-  constructor(private itemStore: ItemStore) {}
+  constructor(
+    private itemStore: ItemStore,
+    private userStore: UserStore,
+  ) {}
 
   async handler(request: ServiceRequest): ServiceReply {
     const { username, itemSlug } = request.params;
 
-    const resItem = await this.itemStore.getItem(
-      username,
+    const resUser = await this.userStore.get(username);
+
+    if (resUser.isFailure) {
+      return resUser;
+    }
+
+    const resItem = await this.itemStore.get(
+      resUser.value.id,
       itemSlug,
     );
 
@@ -27,6 +37,7 @@ export class ItemController implements ServiceController {
         'use-cases/show-item/templates/item.ejs',
       templateData: {
         item: resItem.value,
+        user: resUser.value,
       },
     });
   }

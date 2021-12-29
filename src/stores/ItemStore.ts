@@ -10,10 +10,14 @@ import { ServiceError } from '../types/ServiceError';
 
 export interface Item {
   id: string;
+  slug: string;
   name: string;
+  isPrivate: boolean;
   items: {
     id: string;
+    slug: string;
     name: string;
+    isPrivate: boolean;
   }[];
 }
 
@@ -22,16 +26,8 @@ interface DBItem {
   name: string;
   slug: string;
   user_id: string;
-  item_ids: string[];
+  item_ids: string[] | null;
   is_private: boolean;
-  created_at: string;
-  updated_at: string;
-}
-
-interface DBUser {
-  id: string;
-  name: string;
-  item_id: string;
   created_at: string;
   updated_at: string;
 }
@@ -42,10 +38,14 @@ function toItem(
 ): Item {
   return {
     id: dbMainItem.id,
+    slug: dbMainItem.slug,
     name: dbMainItem.name,
+    isPrivate: dbMainItem.is_private,
     items: dbChildItems.map((dbChildItem) => ({
       id: dbChildItem.id,
+      slug: dbChildItem.slug,
       name: dbChildItem.name,
+      isPrivate: dbChildItem.is_private,
     })),
   };
 }
@@ -53,52 +53,36 @@ function toItem(
 export class ItemStore {
   constructor(private postgreSQLClient: PostgreSQLClient) {}
 
-  async getItem(
-    // @ts-ignore
-    username: string,
-    // @ts-ignore
+  async get(
+    userId: string,
     itemSlug: string,
   ): Promise<ResultOK<Item> | ResultFail<ServiceError>> {
     try {
-      // Get user.
-      const dbUser: DBUser[] = await this.postgreSQLClient
-        .get()
-        .where({ name: username })
-        .select('id')
-        .from('user');
-
-      if (!dbUser.length) {
-        return result.fail({
-          code: Code.NotFound,
-          message: `ItemStore.getItem User not found ${username}.`,
-        });
-      }
-
-      const userId = dbUser[0].id;
-
       // Get main item.
-      const dbMainItem: DBItem[] =
-        await this.postgreSQLClient
-          .get()
-          .where({ slug: itemSlug, user_id: userId })
-          .select('*')
-          .from('item');
+      const dbMainItem = await this.postgreSQLClient
+        .get()
+        .where({ slug: itemSlug, user_id: userId })
+        .select('*')
+        .from<DBItem>('item');
 
       if (!dbMainItem.length) {
         return result.fail({
           code: Code.NotFound,
-          message: `ItemStore.getItem Main item not found ${userId} ${itemSlug}.`,
+          message: `ItemStore.get Main item not found ${userId} ${itemSlug}.`,
         });
       }
 
       const childItemIds = dbMainItem[0].item_ids;
 
-      const dbChildItems: DBItem[] =
-        await this.postgreSQLClient
+      let dbChildItems: DBItem[] = [];
+
+      if (childItemIds?.length) {
+        dbChildItems = await this.postgreSQLClient
           .get()
           .whereIn('id', childItemIds)
           .select('*')
-          .from('item');
+          .from<DBItem>('item');
+      }
 
       const item = toItem(dbMainItem[0], dbChildItems);
 
@@ -106,7 +90,7 @@ export class ItemStore {
     } catch (error: any) {
       return result.fail({
         code: Code.UnexpectedError,
-        message: `ItemStore.getItem ${error.message}.`,
+        message: `ItemStore.get ${error.message}.`,
       });
     }
   }

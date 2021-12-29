@@ -1,9 +1,11 @@
 <%- include('../../templates/header'); -%>
 
-<h1><%= item.name %></h1>
+<h1><%= user.username %>/<%= item.name %></h1>
 <ul>
   <% item.items.forEach(function(item) { %>
-    <li><%= item.name %></li>
+    <li>
+      <a href="/<%= user.username %>/<%= item.slug %>"><%= item.name %></a>
+    </li>
   <% }); %>
 </ul>
 

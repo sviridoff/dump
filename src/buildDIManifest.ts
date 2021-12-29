@@ -5,6 +5,7 @@ import { PostgreSQLClient } from './clients/PostgreSQLClient.js';
 
 // Stores.
 import { ItemStore } from './stores/ItemStore.js';
+import { UserStore } from './stores/UserStore.js';
 
 // Show item.
 import { ItemController } from './use-cases/show-item/ItemController.js';
@@ -20,6 +21,7 @@ export const diToken = {
   postgreSQLDatabaseName: Symbol('postgreSQLDatabaseName'),
   // Stores.
   ItemStore: Symbol('ItemStore'),
+  UserStore: Symbol('UserStore'),
   // Show item.
   ItemController: Symbol('ItemController'),
   mapItemRoutes: Symbol('mapItemRoutes'),
@@ -71,11 +73,16 @@ export function buildDIManifest(
       useClass: ItemStore,
       params: [diToken.PostgreSQLClient],
     },
+    {
+      token: diToken.UserStore,
+      useClass: UserStore,
+      params: [diToken.PostgreSQLClient],
+    },
     // Show item.
     {
       token: diToken.ItemController,
       useClass: ItemController,
-      params: [diToken.ItemStore],
+      params: [diToken.ItemStore, diToken.UserStore],
     },
     {
       token: diToken.mapItemRoutes,

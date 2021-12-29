@@ -30,7 +30,8 @@ exports.up = async function (knex) {
         .uuid('id')
         .primary()
         .defaultTo(knex.raw('uuid_generate_v4()'));
-      table.string('name').notNullable();
+      table.string('username').notNullable();
+      table.string('name');
       table.uuid('item_id');
       table
         .timestamp('created_at')
