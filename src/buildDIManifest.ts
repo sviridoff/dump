@@ -11,9 +11,9 @@ import { UserStore } from './stores/UserStore.js';
 import { ShowItemController } from './use-cases/show-item/ShowItemController.js';
 import { mapShowItemRoutes } from './use-cases/show-item/mapShowItemRoutes.js';
 
-// New item.
-import { NewItemController } from './use-cases/new-item/NewItemController.js';
-import { mapNewItemRoutes } from './use-cases/new-item/mapNewItemRoutes.js';
+// Create item.
+import { CreateItemController } from './use-cases/create-item/CreateItemController.js';
+import { mapCreateItemRoutes } from './use-cases/create-item/mapCreateItemRoutes.js';
 
 export const diToken = {
   // Clients.
@@ -29,14 +29,14 @@ export const diToken = {
   // Show item.
   ShowItemController: Symbol('ShowItemController'),
   mapShowItemRoutes: Symbol('mapShowItemRoutes'),
-  // New item.
-  NewItemController: Symbol('NewItemController'),
-  mapNewItemRoutes: Symbol('mapNewItemRoutes'),
+  // Create item.
+  CreateItemController: Symbol('CreateItemController'),
+  mapCreateItemRoutes: Symbol('mapCreateItemRoutes'),
 };
 
 export const diRoutesManifestTokens = [
   diToken.mapShowItemRoutes,
-  diToken.mapNewItemRoutes,
+  diToken.mapCreateItemRoutes,
 ];
 
 export function buildDIManifest(
@@ -97,16 +97,16 @@ export function buildDIManifest(
       useFactory: mapShowItemRoutes,
       params: [diToken.ShowItemController],
     },
-    // New item.
+    // Create item.
     {
-      token: diToken.NewItemController,
-      useClass: NewItemController,
+      token: diToken.CreateItemController,
+      useClass: CreateItemController,
       params: [diToken.ItemStore, diToken.UserStore],
     },
     {
-      token: diToken.mapNewItemRoutes,
-      useFactory: mapNewItemRoutes,
-      params: [diToken.NewItemController],
+      token: diToken.mapCreateItemRoutes,
+      useFactory: mapCreateItemRoutes,
+      params: [diToken.CreateItemController],
     },
   ];
 }

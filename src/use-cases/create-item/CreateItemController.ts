@@ -8,7 +8,7 @@ import {
 import { ItemStore } from '../../stores/ItemStore.js';
 import { UserStore } from '../../stores/UserStore.js';
 
-export class NewItemController
+export class CreateItemController
   implements ServiceController
 {
   constructor(
@@ -36,7 +36,7 @@ export class NewItemController
 
     return result.ok({
       templatePath:
-        'use-cases/new-item/templates/new-item.ejs',
+        'use-cases/create-item/templates/create-item.ejs',
       templateData: {
         item: resItem.value,
         user: resUser.value,
