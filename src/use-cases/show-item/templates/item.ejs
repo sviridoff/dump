@@ -1,6 +1,10 @@
+<%- include('../../templates/header'); -%>
+
 <h1><%= item.name %></h1>
 <ul>
   <% item.items.forEach(function(item) { %>
     <li><%= item.name %></li>
   <% }); %>
 </ul>
+
+<%- include('../../templates/footer'); -%>

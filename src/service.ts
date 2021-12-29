@@ -45,11 +45,12 @@ function registerRoutes(
             reply: FastifyReply,
           ) => {
             const response = await route.handler({
-              params: request.params as Record<
-                string,
-                unknown
-              >,
+              params: request.params as any,
             });
+
+            if (response.isFailure) {
+              throw response.error;
+            }
 
             const { templatePath, templateData } =
               response.value;
