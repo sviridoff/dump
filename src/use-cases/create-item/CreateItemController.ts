@@ -6,10 +6,10 @@ import {
   ServiceReply,
   ServiceRequest,
 } from '../../types/ServiceController.js';
-import { toItemPresenter } from '../../presenters/toItemPresenter.js';
 import { ItemStore } from '../../stores/ItemStore.js';
 import { UserStore } from '../../stores/UserStore.js';
 import { urlToShowItem } from '../show-item/mapShowItemRoutes.js';
+import { toCreateItemPresenter } from './toCreateItemPresenter.js';
 
 const schema = joi.object({
   childItemTitle: joi.string().required(),
@@ -48,34 +48,6 @@ export class CreateItemController
     const { method } = request;
     const { username, itemSlug } = request.params;
 
-    if (method === 'GET') {
-      const resUser = await this.userStore.get(username);
-
-      if (resUser.isFailure) {
-        return resUser;
-      }
-
-      const userId = resUser.value.id;
-
-      const resItem = await this.itemStore.get(
-        userId,
-        itemSlug,
-      );
-
-      if (resItem.isFailure) {
-        return resItem;
-      }
-
-      return result.ok({
-        templatePath:
-          'use-cases/create-item/templates/create-item.ejs',
-        templateData: {
-          item: toItemPresenter(resItem.value),
-          user: resUser.value,
-        },
-      });
-    }
-
     const resUser = await this.userStore.get(username);
 
     if (resUser.isFailure) {
@@ -83,6 +55,28 @@ export class CreateItemController
     }
 
     const userId = resUser.value.id;
+
+    const resItem = await this.itemStore.get(
+      userId,
+      itemSlug,
+    );
+
+    if (resItem.isFailure) {
+      return resItem;
+    }
+
+    if (method === 'GET') {
+      return result.ok({
+        templatePath:
+          'use-cases/create-item/templates/create-item.ejs',
+        templateData: toCreateItemPresenter(
+          resItem.value,
+          resUser.value,
+        ),
+      });
+    }
+
+    // POST
 
     const resCreateItemRequest =
       toCreateItemRequest(request);
@@ -94,17 +88,17 @@ export class CreateItemController
     const { childItemTitle, childItemIsPrivate } =
       resCreateItemRequest.value;
 
-    console.log('GGGGGGG', childItemIsPrivate);
+    const parentItemId = resItem.value.id;
 
-    const resItem = await this.itemStore.create(
+    const res = await this.itemStore.create(
       userId,
-      itemSlug,
+      parentItemId,
       childItemTitle,
       childItemIsPrivate,
     );
 
-    if (resItem.isFailure) {
-      return resItem;
+    if (res.isFailure) {
+      return res;
     }
 
     return result.ok({

@@ -5,7 +5,7 @@ import {
   ServiceReply,
   ServiceRequest,
 } from '../../types/ServiceController.js';
-import { toItemPresenter } from '../../presenters/toItemPresenter.js';
+import { toShowItemPresenter } from './toShowItemPresenter.js';
 import { ItemStore } from '../../stores/ItemStore.js';
 import { UserStore } from '../../stores/UserStore.js';
 
@@ -37,13 +37,22 @@ export class ShowItemController
       return resItem;
     }
 
+    const resItemChild = await this.itemStore.getChild(
+      resItem.value.id,
+    );
+
+    if (resItemChild.isFailure) {
+      return resItemChild;
+    }
+
     return result.ok({
       templatePath:
         'use-cases/show-item/templates/show-item.ejs',
-      templateData: {
-        item: toItemPresenter(resItem.value),
-        user: resUser.value,
-      },
+      templateData: toShowItemPresenter(
+        resItem.value,
+        resItemChild.value,
+        resUser.value,
+      ),
     });
   }
 }
