@@ -12,5 +12,12 @@ export function mapCreateItemRoutes(
         createItemController,
       ),
     },
+    {
+      method: 'POST',
+      path: '/:username/:itemSlug/new',
+      handler: createItemController.handler.bind(
+        createItemController,
+      ),
+    },
   ];
 }

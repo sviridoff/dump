@@ -25,7 +25,7 @@ exports.up = async function (knex) {
         .uuid('id')
         .primary()
         .defaultTo(knex.raw('uuid_generate_v4()'));
-      table.string('name').notNullable();
+      table.string('title').notNullable();
       table.string('slug').notNullable();
       table
         .uuid('user_id')

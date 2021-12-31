@@ -4,11 +4,14 @@ import { ServiceError } from './ServiceError';
 
 export interface ServiceRequest {
   params: Record<string, any>;
+  body: Record<string, any>;
+  method: 'GET' | 'POST' | 'PUT' | 'DELETE';
 }
 
 interface ServiceReplyConfig {
-  templatePath: string;
-  templateData: Record<string, any>;
+  templatePath?: string;
+  templateData?: Record<string, any>;
+  redirectURL?: string;
 }
 
 export type ServiceReply = Promise<

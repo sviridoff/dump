@@ -45,17 +45,26 @@ function registerRoutes(
             reply: FastifyReply,
           ) => {
             const response = await route.handler({
-              params: request.params as any,
+              params: (request.params as any) ?? {},
+              body: (request.body as any) ?? {},
+              method: request.method as any,
             });
 
             if (response.isFailure) {
               throw response.error;
             }
 
-            const { templatePath, templateData } =
-              response.value;
+            const {
+              redirectURL,
+              templatePath,
+              templateData,
+            } = response.value;
 
-            return reply.view(templatePath, templateData);
+            if (redirectURL) {
+              return reply.redirect(redirectURL);
+            }
+
+            return reply.view(templatePath!, templateData);
           },
         );
       });

@@ -1,6 +1,13 @@
 import { ServiceRoute } from '../../types/ServiceRoute.js';
 import { ServiceController } from '../../types/ServiceController.js';
 
+export function urlToShowItem(
+  username: string,
+  itemSlug: string,
+): string {
+  return `/${username}/${itemSlug}`;
+}
+
 export function mapShowItemRoutes(
   showItemController: ServiceController,
 ): ServiceRoute[] {

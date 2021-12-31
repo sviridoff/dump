@@ -5,6 +5,7 @@ import {
   ServiceReply,
   ServiceRequest,
 } from '../../types/ServiceController.js';
+import { toItemPresenter } from '../../presenters/toItemPresenter.js';
 import { ItemStore } from '../../stores/ItemStore.js';
 import { UserStore } from '../../stores/UserStore.js';
 
@@ -25,8 +26,10 @@ export class ShowItemController
       return resUser;
     }
 
+    const userId = resUser.value.id;
+
     const resItem = await this.itemStore.get(
-      resUser.value.id,
+      userId,
       itemSlug,
     );
 
@@ -38,7 +41,7 @@ export class ShowItemController
       templatePath:
         'use-cases/show-item/templates/show-item.ejs',
       templateData: {
-        item: resItem.value,
+        item: toItemPresenter(resItem.value),
         user: resUser.value,
       },
     });

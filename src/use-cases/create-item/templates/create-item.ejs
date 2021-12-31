@@ -1,16 +1,21 @@
 <%- include('../../templates/header'); -%>
 
-<h1><%= user.username %>/<%= item.name %></h1>
-<% if (item.items.length){ %>
-  <ul>
-    <% item.items.forEach(function(item) { %>
-      <li>
-        <a href="/<%= user.username %>/<%= item.slug %>"><%= item.name %></a>
-      </li>
-    <% }); %>
-  </ul>
-<% } %>
+<h1>
+  <%= user.username %> / <%= item.title %> (<%=
+  item.visibility %>)
+</h1>
 
-<a href="/<%= user.username %>/<%= item.slug %>/new">New</a>
+<h2>Create new item</h2>
+
+<form
+  action="/<%= user.username %>/<%= item.slug %>/new"
+  method="POST"
+>
+  <label for="childItemTitle">Title</label>
+  <input type="text" name="childItemTitle" />
+  <label for="childItemIsPrivate">Is private</label>
+  <input type="checkbox" name="childItemIsPrivate" />
+  <input type="submit" value="Create item" />
+</form>
 
 <%- include('../../templates/footer'); -%>
