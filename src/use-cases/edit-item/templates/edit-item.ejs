@@ -1,0 +1,26 @@
+<%- include('../../templates/header'); -%>
+
+<h1>
+  <%= user.username %> / <%= item.title %> (<%=
+  item.visibility %>)
+</h1>
+
+<h2>Edit item</h2>
+
+<form
+  action="/<%= user.username %>/<%= item.slug %>/edit"
+  method="POST"
+>
+  <label for="newItemTitle">New title</label>
+  <input
+    type="text"
+    value="<%= item.title %>"
+    name="newItemTitle"
+  />
+  <label for="newItemIsPrivate">Is private</label>
+  <input type="checkbox" name="newItemIsPrivate" <%=
+  item.isPrivate ? "checked" : "" %> />
+  <input type="submit" value="Edit item" />
+</form>
+
+<%- include('../../templates/footer'); -%>

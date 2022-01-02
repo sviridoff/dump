@@ -1,5 +1,4 @@
-import { Code, result } from '@daisugi/kintsugi';
-import joi from 'joi';
+import { result } from '@daisugi/kintsugi';
 
 import {
   ServiceController,
@@ -10,31 +9,8 @@ import { ItemStore } from '../../stores/ItemStore.js';
 import { UserStore } from '../../stores/UserStore.js';
 import { urlToShowItem } from '../show-item/mapShowItemRoutes.js';
 import { toCreateItemPresenter } from './toCreateItemPresenter.js';
-
-const schema = joi.object({
-  childItemTitle: joi.string().required(),
-  childItemIsPrivate: joi
-    .boolean()
-    .truthy('on')
-    .optional()
-    .default(false),
-});
-
-function toCreateItemRequest(request: ServiceRequest) {
-  const response = schema.validate(request.body, {
-    allowUnknown: true,
-    stripUnknown: true,
-  });
-
-  if (response.error) {
-    return result.fail({
-      code: Code.BadRequest,
-      message: response.error.message,
-    });
-  }
-
-  return result.ok(response.value);
-}
+import { toCreateItemRequest } from './toCreateItemRequest.js';
+import { toSlug } from '../../libs/toSlug.js';
 
 export class CreateItemController
   implements ServiceController
@@ -87,6 +63,24 @@ export class CreateItemController
 
     const { childItemTitle, childItemIsPrivate } =
       resCreateItemRequest.value;
+
+    const childItemSlug = toSlug(childItemTitle);
+
+    const resChildItem = await this.itemStore.get(
+      userId,
+      childItemSlug,
+    );
+
+    if (resChildItem.isSuccess) {
+      return result.ok({
+        templatePath:
+          'use-cases/create-item/templates/create-item.ejs',
+        templateData: toCreateItemPresenter(
+          resItem.value,
+          resUser.value,
+        ),
+      });
+    }
 
     const parentItemId = resItem.value.id;
 

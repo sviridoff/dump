@@ -133,4 +133,30 @@ export class ItemStore {
       });
     }
   }
+
+  async edit(
+    itemId: string,
+    newItemTitle: string,
+    newItemSlug: string,
+    newItemIsPrivate: boolean,
+  ) {
+    try {
+      const response = await this.postgreSQLClient
+        .get()
+        .update({
+          title: newItemTitle,
+          slug: newItemSlug,
+          is_private: newItemIsPrivate,
+        })
+        .where({ id: itemId })
+        .into('item');
+
+      return result.ok(response);
+    } catch (error: any) {
+      return result.fail({
+        code: Code.UnexpectedError,
+        message: `ItemStore.edit ${error.message}.`,
+      });
+    }
+  }
 }

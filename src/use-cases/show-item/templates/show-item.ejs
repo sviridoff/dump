@@ -17,6 +17,12 @@
 </ul>
 <% } %>
 
-<a href="/<%= user.username %>/<%= item.slug %>/new">New</a>
+<a href="/<%= user.username %>/<%= item.slug %>/edit"
+  >Edit item</a
+>
+
+<a href="/<%= user.username %>/<%= item.slug %>/new"
+  >Create new item</a
+>
 
 <%- include('../../templates/footer'); -%>
