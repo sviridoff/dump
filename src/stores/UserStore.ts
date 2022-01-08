@@ -20,12 +20,14 @@ interface DBUser {
 export interface User {
   id: string;
   username: string;
+  itemId: string;
 }
 
 function toUser(dbUser: DBUser): User {
   return {
     id: dbUser.id,
     username: dbUser.username,
+    itemId: dbUser.item_id,
   };
 }
 

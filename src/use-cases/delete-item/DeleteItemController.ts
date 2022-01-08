@@ -5,11 +5,11 @@ import {
   ServiceReply,
   ServiceRequest,
 } from '../../types/ServiceController.js';
-import { toShowItemPresenter } from './toShowItemPresenter.js';
 import { ItemStore } from '../../stores/ItemStore.js';
 import { UserStore } from '../../stores/UserStore.js';
+import { urlToShowItem } from '../show-item/mapShowItemRoutes.js';
 
-export class ShowItemController
+export class DeleteItemController
   implements ServiceController
 {
   constructor(
@@ -28,30 +28,32 @@ export class ShowItemController
 
     const userId = resUser.value.id;
 
-    const resItem = await this.itemStore.getBySlug(
-      userId,
+    const resDeletion = await this.itemStore.deleteBySlug(
+      resUser.value.id,
       itemSlug,
+    );
+
+    if (resDeletion.isFailure) {
+      return resDeletion;
+    }
+
+    const itemId = resUser.value.itemId;
+
+    const resItem = await this.itemStore.getById(
+      userId,
+      itemId,
     );
 
     if (resItem.isFailure) {
       return resItem;
     }
 
-    const resItemChild = await this.itemStore.getChild(
-      resItem.value.id,
-    );
-
-    if (resItemChild.isFailure) {
-      return resItemChild;
-    }
+    const redirectItemSlug = resItem.value.slug;
 
     return result.ok({
-      templatePath:
-        'use-cases/show-item/templates/show-item.ejs',
-      templateData: toShowItemPresenter(
-        resItem.value,
-        resItemChild.value,
-        resUser.value,
+      redirectURL: urlToShowItem(
+        username,
+        redirectItemSlug,
       ),
     });
   }

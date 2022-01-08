@@ -19,6 +19,10 @@ import { mapCreateItemRoutes } from './use-cases/create-item/mapCreateItemRoutes
 import { EditItemController } from './use-cases/edit-item/EditItemController.js';
 import { mapEditItemRoutes } from './use-cases/edit-item/mapEditItemRoutes.js';
 
+// Delete item.
+import { DeleteItemController } from './use-cases/delete-item/DeleteItemController.js';
+import { mapDeleteItemRoutes } from './use-cases/delete-item/mapDeleteItemRoutes.js';
+
 export const diToken = {
   // Clients.
   PostgreSQLClient: Symbol('PostgreSQLClient'),
@@ -39,12 +43,16 @@ export const diToken = {
   // Edit item.
   EditItemController: Symbol('EditItemController'),
   mapEditItemRoutes: Symbol('mapEditItemRoutes'),
+  // Delete item.
+  DeleteItemController: Symbol('DeleteItemController'),
+  mapDeleteItemRoutes: Symbol('mapDeleteItemRoutes'),
 };
 
 export const diRoutesManifestTokens = [
   diToken.mapShowItemRoutes,
   diToken.mapCreateItemRoutes,
   diToken.mapEditItemRoutes,
+  diToken.mapDeleteItemRoutes,
 ];
 
 export function buildDIManifest(
@@ -126,6 +134,17 @@ export function buildDIManifest(
       token: diToken.mapEditItemRoutes,
       useFactory: mapEditItemRoutes,
       params: [diToken.EditItemController],
+    },
+    // Delete item.
+    {
+      token: diToken.DeleteItemController,
+      useClass: DeleteItemController,
+      params: [diToken.ItemStore, diToken.UserStore],
+    },
+    {
+      token: diToken.mapDeleteItemRoutes,
+      useFactory: mapDeleteItemRoutes,
+      params: [diToken.DeleteItemController],
     },
   ];
 }

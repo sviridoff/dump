@@ -32,7 +32,7 @@ export class CreateItemController
 
     const userId = resUser.value.id;
 
-    const resItem = await this.itemStore.get(
+    const resItem = await this.itemStore.getBySlug(
       userId,
       itemSlug,
     );
@@ -66,7 +66,7 @@ export class CreateItemController
 
     const childItemSlug = toSlug(childItemTitle);
 
-    const resChildItem = await this.itemStore.get(
+    const resChildItem = await this.itemStore.getBySlug(
       userId,
       childItemSlug,
     );

@@ -43,7 +43,7 @@ function toItems(dbChildItems: DBItem[]): Item[] {
 export class ItemStore {
   constructor(private postgreSQLClient: PostgreSQLClient) {}
 
-  async get(
+  async getBySlug(
     userId: string,
     itemSlug: string,
   ): Promise<ResultOK<Item> | ResultFail<ServiceError>> {
@@ -57,7 +57,7 @@ export class ItemStore {
       if (!dbItem.length) {
         return result.fail({
           code: Code.NotFound,
-          message: `ItemStore.get Item not found ${userId} ${itemSlug}.`,
+          message: `ItemStore.getBySlug Item not found ${userId} ${itemSlug}.`,
         });
       }
 
@@ -65,7 +65,61 @@ export class ItemStore {
     } catch (error: any) {
       return result.fail({
         code: Code.UnexpectedError,
-        message: `ItemStore.get ${error.message}.`,
+        message: `ItemStore.getBySlug ${error.message}.`,
+      });
+    }
+  }
+
+  async getById(
+    userId: string,
+    itemId: string,
+  ): Promise<ResultOK<Item> | ResultFail<ServiceError>> {
+    try {
+      const dbItem = await this.postgreSQLClient
+        .get()
+        .where({ id: itemId, user_id: userId })
+        .select('*')
+        .from<DBItem>('item');
+
+      if (!dbItem.length) {
+        return result.fail({
+          code: Code.NotFound,
+          message: `ItemStore.getById Item not found ${userId} ${itemId}.`,
+        });
+      }
+
+      return result.ok(toItem(dbItem[0]));
+    } catch (error: any) {
+      return result.fail({
+        code: Code.UnexpectedError,
+        message: `ItemStore.getById ${error.message}.`,
+      });
+    }
+  }
+
+  async deleteBySlug(
+    userId: string,
+    itemSlug: string,
+  ): Promise<ResultOK<null> | ResultFail<ServiceError>> {
+    try {
+      const dbItem = await this.postgreSQLClient
+        .get()
+        .where({ slug: itemSlug, user_id: userId })
+        .del()
+        .from<DBItem>('item');
+
+      if (!dbItem) {
+        return result.fail({
+          code: Code.NotFound,
+          message: `ItemStore.deleteBySlug Item not found ${userId} ${itemSlug}.`,
+        });
+      }
+
+      return result.ok(null);
+    } catch (error: any) {
+      return result.fail({
+        code: Code.UnexpectedError,
+        message: `ItemStore.deleteBySlug ${error.message}.`,
       });
     }
   }

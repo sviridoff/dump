@@ -32,7 +32,7 @@ export class EditItemController
 
     const userId = resUser.value.id;
 
-    const resItem = await this.itemStore.get(
+    const resItem = await this.itemStore.getBySlug(
       userId,
       itemSlug,
     );
