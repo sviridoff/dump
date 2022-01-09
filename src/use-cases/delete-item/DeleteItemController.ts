@@ -29,7 +29,7 @@ export class DeleteItemController
     const userId = resUser.value.id;
 
     const resDeletion = await this.itemStore.deleteBySlug(
-      resUser.value.id,
+      userId,
       itemSlug,
     );
 
@@ -37,18 +37,18 @@ export class DeleteItemController
       return resDeletion;
     }
 
-    const itemId = resUser.value.itemId;
+    const redirectItemId = resUser.value.itemId;
 
-    const resItem = await this.itemStore.getById(
+    const resRedirectItem = await this.itemStore.getById(
       userId,
-      itemId,
+      redirectItemId,
     );
 
-    if (resItem.isFailure) {
-      return resItem;
+    if (resRedirectItem.isFailure) {
+      return resRedirectItem;
     }
 
-    const redirectItemSlug = resItem.value.slug;
+    const redirectItemSlug = resRedirectItem.value.slug;
 
     return result.ok({
       redirectURL: urlToShowItem(
