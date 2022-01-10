@@ -213,4 +213,25 @@ export class ItemStore {
       });
     }
   }
+
+  async list(
+    userId: string,
+    itemSlug: string,
+  ): Promise<ResultOK<Item[]> | ResultFail<ServiceError>> {
+    try {
+      const dbChildItems = await this.postgreSQLClient
+        .get()
+        .where('user_id', userId)
+        .whereNot('slug', itemSlug)
+        .select('*')
+        .from<DBItem>('item');
+
+      return result.ok(toItems(dbChildItems));
+    } catch (error: any) {
+      return result.fail({
+        code: Code.UnexpectedError,
+        message: `ItemStore.list ${error.message}.`,
+      });
+    }
+  }
 }
