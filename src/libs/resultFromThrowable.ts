@@ -2,9 +2,8 @@ import {
   result,
   ResultFail,
   ResultOK,
+  Fn,
 } from '@daisugi/kintsugi';
-
-import { Fn } from '../types/Fn';
 
 export function resultFromThrowable<K>(
   fn: Fn,

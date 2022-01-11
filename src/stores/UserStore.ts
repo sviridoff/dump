@@ -7,6 +7,7 @@ import {
 
 import { PostgreSQLClient } from '../clients/PostgreSQLClient';
 import { ServiceError } from '../types/ServiceError';
+import { mutErrorPrefixMessage } from '../libs/mutErrorPrefixMessage';
 
 interface DBUser {
   id: string;
@@ -37,29 +38,33 @@ export class UserStore {
   async get(
     username: string,
   ): Promise<ResultOK<User> | ResultFail<ServiceError>> {
-    try {
-      // Get user.
-      const dbUser = await this.postgreSQLClient
-        .get()
-        .where({ username })
-        .select('*')
-        .from<DBUser>('user');
+    const resDBUser = await this.postgreSQLClient.query(
+      (knex) => {
+        return knex
+          .where({ username })
+          .select('*')
+          .from<DBUser>('user');
+      },
+    );
 
-      if (!dbUser.length) {
-        return result.fail({
-          code: Code.NotFound,
-          message: `UserStore.get User not found ${username}.`,
-        });
-      }
+    if (resDBUser.isFailure) {
+      return mutErrorPrefixMessage(
+        resDBUser,
+        'UserStore.get',
+      );
+    }
 
-      const user = toUser(dbUser[0]);
+    const dbUser = resDBUser.value;
 
-      return result.ok(user);
-    } catch (error: any) {
+    if (!dbUser.length) {
       return result.fail({
-        code: Code.UnexpectedError,
-        message: `UserStore.get ${error.message}.`,
+        code: Code.NotFound,
+        message: `UserStore.get User not found ${username}.`,
       });
     }
+
+    const user = toUser(dbUser[0]);
+
+    return result.ok(user);
   }
 }

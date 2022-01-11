@@ -1,4 +1,9 @@
-import Knex from 'knex';
+import { knex, Knex } from 'knex';
+import { Code, result } from '@daisugi/kintsugi';
+
+interface Query {
+  (knex: Knex): Promise<any>;
+}
 
 export class PostgreSQLClient {
   private knex;
@@ -10,7 +15,7 @@ export class PostgreSQLClient {
     postgreSQLPassword: string,
     postgreSQLDatabaseName: string,
   ) {
-    this.knex = Knex({
+    this.knex = knex({
       client: 'pg',
       connection: {
         host: postgreSQLHost,
@@ -22,7 +27,20 @@ export class PostgreSQLClient {
     });
   }
 
-  public get() {
+  get() {
     return this.knex;
+  }
+
+  async query(fn: Query) {
+    try {
+      const response = await fn(this.knex);
+
+      return result.ok(response);
+    } catch (error: any) {
+      return result.fail({
+        code: Code.UnexpectedError,
+        message: `PostgreSQLClient.query ${error.message}`,
+      });
+    }
   }
 }
