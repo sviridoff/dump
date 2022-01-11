@@ -1,8 +1,8 @@
 import { ResultFail } from '@daisugi/kintsugi';
 
-import { ServiceError } from '../types/ServiceError';
+import { ServiceError } from '../types/ServiceError.js';
 
-export function mutErrorPrefixMessage(
+export function contextualizeError(
   resultFail: ResultFail<ServiceError>,
   prefixMessage: string,
 ) {

@@ -9,6 +9,7 @@ import { randomUUID } from 'node:crypto';
 import { PostgreSQLClient } from '../clients/PostgreSQLClient.js';
 import { ServiceError } from '../types/ServiceError.js';
 import { toSlug } from '../libs/toSlug.js';
+import { contextualizeError } from '../libs/contextualizeError.js';
 
 export interface Item {
   id: string;
@@ -47,106 +48,124 @@ export class ItemStore {
     userId: string,
     itemSlug: string,
   ): Promise<ResultOK<Item> | ResultFail<ServiceError>> {
-    try {
-      const dbItem = await this.postgreSQLClient
-        .get()
+    const resDBItems = await this.postgreSQLClient.query<
+      DBItem[]
+    >((knex) => {
+      return knex
         .where({ slug: itemSlug, user_id: userId })
         .select('*')
-        .from<DBItem>('item');
+        .from('item');
+    });
 
-      if (!dbItem.length) {
-        return result.fail({
-          code: Code.NotFound,
-          message: `ItemStore.getBySlug Item not found ${userId} ${itemSlug}.`,
-        });
-      }
+    if (resDBItems.isFailure) {
+      return contextualizeError(
+        resDBItems,
+        'ItemStore.getBySlug',
+      );
+    }
 
-      return result.ok(toItem(dbItem[0]));
-    } catch (error: any) {
+    const dbItem = resDBItems.value[0];
+
+    if (!dbItem) {
       return result.fail({
-        code: Code.UnexpectedError,
-        message: `ItemStore.getBySlug ${error.message}.`,
+        code: Code.NotFound,
+        message: `ItemStore.getBySlug Item not found ${userId} ${itemSlug}.`,
       });
     }
+
+    return result.ok(toItem(dbItem));
   }
 
   async getById(
     userId: string,
     itemId: string,
   ): Promise<ResultOK<Item> | ResultFail<ServiceError>> {
-    try {
-      const dbItem = await this.postgreSQLClient
-        .get()
+    const resDBItems = await this.postgreSQLClient.query<
+      DBItem[]
+    >((knex) => {
+      return knex
         .where({ id: itemId, user_id: userId })
         .select('*')
-        .from<DBItem>('item');
+        .from('item');
+    });
 
-      if (!dbItem.length) {
-        return result.fail({
-          code: Code.NotFound,
-          message: `ItemStore.getById Item not found ${userId} ${itemId}.`,
-        });
-      }
+    if (resDBItems.isFailure) {
+      return contextualizeError(
+        resDBItems,
+        'ItemStore.getById',
+      );
+    }
 
-      return result.ok(toItem(dbItem[0]));
-    } catch (error: any) {
+    const dbItem = resDBItems.value[0];
+
+    if (!dbItem) {
       return result.fail({
-        code: Code.UnexpectedError,
-        message: `ItemStore.getById ${error.message}.`,
+        code: Code.NotFound,
+        message: `ItemStore.getById Item not found ${userId} ${itemId}.`,
       });
     }
+
+    return result.ok(toItem(dbItem));
   }
 
   async deleteBySlug(
     userId: string,
     itemSlug: string,
   ): Promise<ResultOK<null> | ResultFail<ServiceError>> {
-    try {
-      const dbItem = await this.postgreSQLClient
-        .get()
-        .where({ slug: itemSlug, user_id: userId })
-        .del()
-        .from<DBItem>('item');
+    const resDB = await this.postgreSQLClient.query<number>(
+      (knex) => {
+        return knex
+          .where({ slug: itemSlug, user_id: userId })
+          .del()
+          .from('item');
+      },
+    );
 
-      if (!dbItem) {
-        return result.fail({
-          code: Code.NotFound,
-          message: `ItemStore.deleteBySlug Item not found ${userId} ${itemSlug}.`,
-        });
-      }
+    if (resDB.isFailure) {
+      return contextualizeError(
+        resDB,
+        'ItemStore.deleteBySlug',
+      );
+    }
 
-      return result.ok(null);
-    } catch (error: any) {
+    if (!resDB.value) {
       return result.fail({
-        code: Code.UnexpectedError,
-        message: `ItemStore.deleteBySlug ${error.message}.`,
+        code: Code.NotFound,
+        message: `ItemStore.deleteBySlug Item not found ${userId} ${itemSlug}.`,
       });
     }
+
+    return result.ok(null);
   }
 
   async getChild(
     parentItemId: string,
   ): Promise<ResultOK<Item[]> | ResultFail<ServiceError>> {
-    try {
-      const dbChildItemIds = this.postgreSQLClient
-        .get()
-        .where({ parent_item_id: parentItemId })
-        .select('child_item_id')
-        .from<string>('item_item');
+    const resDBChildItems =
+      await this.postgreSQLClient.query<DBItem[]>(
+        (knex) => {
+          const dbChildItemIds = knex
+            .where({ parent_item_id: parentItemId })
+            .select('child_item_id')
+            .from<string>('item_item');
 
-      const dbChildItems = await this.postgreSQLClient
-        .get()
-        .whereIn('id', dbChildItemIds)
-        .select('*')
-        .from<DBItem>('item');
+          return knex
+            .whereIn('id', dbChildItemIds)
+            .select('*')
+            .from('item');
+        },
+      );
 
-      return result.ok(toItems(dbChildItems));
-    } catch (error: any) {
-      return result.fail({
-        code: Code.UnexpectedError,
-        message: `ItemStore.getChild ${error.message}.`,
-      });
+    if (resDBChildItems.isFailure) {
+      return contextualizeError(
+        resDBChildItems,
+        'ItemStore.getChild',
+      );
     }
+
+    const dbChildItems = resDBChildItems.value;
+
+    return result.ok(toItems(dbChildItems));
   }
 
   async create(
@@ -155,12 +174,11 @@ export class ItemStore {
     childItemTitle: string,
     childItemIsPrivate: boolean,
   ) {
-    try {
-      const childItemId = randomUUID();
+    const childItemId = randomUUID();
 
-      const response = await this.postgreSQLClient
-        .get()
-        .transaction(async (transaction) => {
+    const resResponse = await this.postgreSQLClient.query(
+      (knex) => {
+        return knex.transaction(async (transaction) => {
           await transaction
             .insert({
               id: childItemId,
@@ -178,14 +196,17 @@ export class ItemStore {
             })
             .into('item_item');
         });
+      },
+    );
 
-      return result.ok(response);
-    } catch (error: any) {
-      return result.fail({
-        code: Code.UnexpectedError,
-        message: `ItemStore.create ${error.message}.`,
-      });
+    if (resResponse.isFailure) {
+      return contextualizeError(
+        resResponse,
+        'ItemStore.create',
+      );
     }
+
+    return result.ok(resResponse.value);
   }
 
   async edit(
@@ -194,44 +215,52 @@ export class ItemStore {
     newItemSlug: string,
     newItemIsPrivate: boolean,
   ) {
-    try {
-      const response = await this.postgreSQLClient
-        .get()
-        .update({
-          title: newItemTitle,
-          slug: newItemSlug,
-          is_private: newItemIsPrivate,
-        })
-        .where({ id: itemId })
-        .into('item');
+    const resResponse = await this.postgreSQLClient.query(
+      (knex) => {
+        return knex
+          .update({
+            title: newItemTitle,
+            slug: newItemSlug,
+            is_private: newItemIsPrivate,
+          })
+          .where({ id: itemId })
+          .into('item');
+      },
+    );
 
-      return result.ok(response);
-    } catch (error: any) {
-      return result.fail({
-        code: Code.UnexpectedError,
-        message: `ItemStore.edit ${error.message}.`,
-      });
+    if (resResponse.isFailure) {
+      return contextualizeError(
+        resResponse,
+        'ItemStore.edit',
+      );
     }
+
+    return result.ok(resResponse.value);
   }
 
   async list(
     userId: string,
     itemSlug: string,
   ): Promise<ResultOK<Item[]> | ResultFail<ServiceError>> {
-    try {
-      const dbChildItems = await this.postgreSQLClient
-        .get()
+    const resDBItems = await this.postgreSQLClient.query<
+      DBItem[]
+    >((knex) => {
+      return knex
         .where('user_id', userId)
         .whereNot('slug', itemSlug)
         .select('*')
-        .from<DBItem>('item');
+        .from('item');
+    });
 
-      return result.ok(toItems(dbChildItems));
-    } catch (error: any) {
-      return result.fail({
-        code: Code.UnexpectedError,
-        message: `ItemStore.list ${error.message}.`,
-      });
+    if (resDBItems.isFailure) {
+      return contextualizeError(
+        resDBItems,
+        'ItemStore.list',
+      );
     }
+
+    const dbItems = resDBItems.value;
+
+    return result.ok(toItems(dbItems));
   }
 }

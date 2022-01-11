@@ -1,6 +1,6 @@
 import { ResultOK, ResultFail } from '@daisugi/kintsugi';
 
-import { ServiceError } from './ServiceError';
+import { ServiceError } from './ServiceError.js';
 
 export interface ServiceRequest {
   params: Record<string, any>;

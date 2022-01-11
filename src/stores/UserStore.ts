@@ -5,9 +5,9 @@ import {
   ResultOK,
 } from '@daisugi/kintsugi';
 
-import { PostgreSQLClient } from '../clients/PostgreSQLClient';
-import { ServiceError } from '../types/ServiceError';
-import { mutErrorPrefixMessage } from '../libs/mutErrorPrefixMessage';
+import { PostgreSQLClient } from '../clients/PostgreSQLClient.js';
+import { ServiceError } from '../types/ServiceError.js';
+import { contextualizeError } from '../libs/contextualizeError.js';
 
 interface DBUser {
   id: string;
@@ -38,32 +38,32 @@ export class UserStore {
   async get(
     username: string,
   ): Promise<ResultOK<User> | ResultFail<ServiceError>> {
-    const resDBUser = await this.postgreSQLClient.query(
-      (knex) => {
-        return knex
-          .where({ username })
-          .select('*')
-          .from<DBUser>('user');
-      },
-    );
+    const resDBUsers = await this.postgreSQLClient.query<
+      DBUser[]
+    >((knex) => {
+      return knex
+        .where({ username })
+        .select('*')
+        .from('user');
+    });
 
-    if (resDBUser.isFailure) {
-      return mutErrorPrefixMessage(
-        resDBUser,
+    if (resDBUsers.isFailure) {
+      return contextualizeError(
+        resDBUsers,
         'UserStore.get',
       );
     }
 
-    const dbUser = resDBUser.value;
+    const dbUser = resDBUsers.value[0];
 
-    if (!dbUser.length) {
+    if (!dbUser) {
       return result.fail({
         code: Code.NotFound,
         message: `UserStore.get User not found ${username}.`,
       });
     }
 
-    const user = toUser(dbUser[0]);
+    const user = toUser(dbUser);
 
     return result.ok(user);
   }

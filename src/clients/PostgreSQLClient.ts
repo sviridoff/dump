@@ -1,8 +1,8 @@
-import { knex, Knex } from 'knex';
+import Knex, { Knex as KnexType } from 'knex';
 import { Code, result } from '@daisugi/kintsugi';
 
 interface Query {
-  (knex: Knex): Promise<any>;
+  (knex: KnexType): Promise<any>;
 }
 
 export class PostgreSQLClient {
@@ -15,7 +15,7 @@ export class PostgreSQLClient {
     postgreSQLPassword: string,
     postgreSQLDatabaseName: string,
   ) {
-    this.knex = knex({
+    this.knex = Knex({
       client: 'pg',
       connection: {
         host: postgreSQLHost,
@@ -27,13 +27,9 @@ export class PostgreSQLClient {
     });
   }
 
-  get() {
-    return this.knex;
-  }
-
-  async query(fn: Query) {
+  async query<T>(queryBuilder: Query) {
     try {
-      const response = await fn(this.knex);
+      const response: T = await queryBuilder(this.knex);
 
       return result.ok(response);
     } catch (error: any) {
