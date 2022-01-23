@@ -55,13 +55,13 @@ function registerRoutes(
             }
 
             const {
-              redirectURL,
+              redirectToURL,
               templatePath,
               templateData,
             } = response.value;
 
-            if (redirectURL) {
-              return reply.redirect(redirectURL);
+            if (redirectToURL) {
+              return reply.redirect(redirectToURL);
             }
 
             return reply.view(templatePath!, templateData);

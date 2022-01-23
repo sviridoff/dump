@@ -9,6 +9,8 @@ import { ItemStore } from '../../stores/ItemStore.js';
 import { UserStore } from '../../stores/UserStore.js';
 import { toMoveItemPresenter } from './toMoveItemPresenter.js';
 import { resultPromiseAll } from '../../libs/resultPromiseAll.js';
+import { urlToShowItem } from '../show-item/mapShowItemRoutes.js';
+import { toMoveItemRequest } from './toMoveItemRequest.js';
 
 export class MoveItemController
   implements ServiceController
@@ -19,35 +21,59 @@ export class MoveItemController
   ) {}
 
   async handler(request: ServiceRequest): ServiceReply {
+    const { method } = request;
     const { username, itemSlug } = request.params;
 
-    const resUser = await this.userStore.get(username);
+    if (method === 'GET') {
+      const resUser = await this.userStore.get(username);
 
-    if (resUser.isFailure) {
-      return resUser;
+      if (resUser.isFailure) {
+        return resUser;
+      }
+
+      const userId = resUser.value.id;
+
+      const res = await resultPromiseAll([
+        this.itemStore.getBySlug(userId, itemSlug),
+        this.itemStore.getExcept(userId, itemSlug),
+      ]);
+
+      if (res.isFailure) {
+        return res;
+      }
+
+      const [item, items] = res.value;
+
+      return result.ok({
+        templatePath:
+          'use-cases/move-item/templates/move-item.ejs',
+        templateData: toMoveItemPresenter(
+          item,
+          items,
+          resUser.value,
+        ),
+      });
     }
 
-    const userId = resUser.value.id;
+    const moveItemRequest = toMoveItemRequest(request);
 
-    const res = await resultPromiseAll([
-      this.itemStore.getBySlug(userId, itemSlug),
-      this.itemStore.list(userId, itemSlug),
-    ]);
+    if (moveItemRequest.isFailure) {
+      return moveItemRequest;
+    }
+
+    const { toItemSlug } = moveItemRequest.value;
+
+    const res = await this.itemStore.move(
+      itemSlug,
+      toItemSlug,
+    );
 
     if (res.isFailure) {
       return res;
     }
 
-    const [item, items] = res.value;
-
     return result.ok({
-      templatePath:
-        'use-cases/move-item/templates/move-item.ejs',
-      templateData: toMoveItemPresenter(
-        item,
-        items,
-        resUser.value,
-      ),
+      redirectToURL: urlToShowItem(username, itemSlug),
     });
   }
 }

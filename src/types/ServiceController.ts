@@ -11,7 +11,7 @@ export interface ServiceRequest {
 interface ServiceReplyConfig {
   templatePath?: string;
   templateData?: Record<string, any>;
-  redirectURL?: string;
+  redirectToURL?: string;
 }
 
 export type ServiceReply = Promise<

@@ -51,7 +51,7 @@ export class DeleteItemController
     const redirectItemSlug = resRedirectItem.value.slug;
 
     return result.ok({
-      redirectURL: urlToShowItem(
+      redirectToURL: urlToShowItem(
         username,
         redirectItemSlug,
       ),

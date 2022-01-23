@@ -4,15 +4,10 @@ import joi from 'joi';
 import { ServiceRequest } from '../../types/ServiceController.js';
 
 const schema = joi.object({
-  newItemTitle: joi.string().required(),
-  newItemIsPrivate: joi
-    .boolean()
-    .truthy('on')
-    .optional()
-    .default(false),
+  toItemSlug: joi.string().required(),
 });
 
-export function toEditItemRequest(request: ServiceRequest) {
+export function toMoveItemRequest(request: ServiceRequest) {
   const response = schema.validate(request.body, {
     allowUnknown: true,
     stripUnknown: true,

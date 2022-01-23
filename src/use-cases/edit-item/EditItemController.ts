@@ -78,7 +78,7 @@ export class EditItemController
     }
 
     return result.ok({
-      redirectURL: urlToShowItem(username, newItemSlug),
+      redirectToURL: urlToShowItem(username, newItemSlug),
     });
   }
 }

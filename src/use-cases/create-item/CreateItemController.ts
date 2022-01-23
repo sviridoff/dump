@@ -96,7 +96,7 @@ export class CreateItemController
     }
 
     return result.ok({
-      redirectURL: urlToShowItem(username, itemSlug),
+      redirectToURL: urlToShowItem(username, itemSlug),
     });
   }
 }

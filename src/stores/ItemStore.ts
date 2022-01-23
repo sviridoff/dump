@@ -238,7 +238,41 @@ export class ItemStore {
     return result.ok(resResponse.value);
   }
 
-  async list(
+  async move(itemSlug: string, toItemSlug: string) {
+    const resResponse = await this.postgreSQLClient.query(
+      (knex) => {
+        return knex.transaction(async (transaction) => {
+          await transaction
+            .insert({
+              id: childItemId,
+              title: childItemTitle,
+              slug: toSlug(childItemTitle),
+              user_id: userId,
+              is_private: childItemIsPrivate,
+            })
+            .into('item');
+
+          await transaction
+            .insert({
+              parent_item_id: parentItemId,
+              child_item_id: childItemId,
+            })
+            .into('item_item');
+        });
+      },
+    );
+
+    if (resResponse.isFailure) {
+      return contextualizeError(
+        resResponse,
+        'ItemStore.edit',
+      );
+    }
+
+    return result.ok(resResponse.value);
+  }
+
+  async getExcept(
     userId: string,
     itemSlug: string,
   ): Promise<ResultOK<Item[]> | ResultFail<ServiceError>> {
