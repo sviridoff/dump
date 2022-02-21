@@ -1,12 +1,13 @@
-import { ResultFail } from '@daisugi/kintsugi';
-
 import { AppError } from '../types/AppError.js';
+import { Result } from '../libs/Result.js';
 
 export function contextualizeError(
-  resultFail: ResultFail<AppError>,
+  resultFail: Result<AppError>,
   prefixMessage: string,
 ) {
-  resultFail.error.message = `${prefixMessage} ${resultFail.error.message}.`;
+  resultFail.getError().message = `${prefixMessage} ${
+    resultFail.getError().message
+  }.`;
 
   return resultFail;
 }

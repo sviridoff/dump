@@ -1,13 +1,8 @@
-import {
-  Code,
-  result,
-  ResultFail,
-  ResultOK,
-} from '@daisugi/kintsugi';
+import { Code } from '@daisugi/kintsugi';
 
 import { PostgreSQLClient } from '../clients/PostgreSQLClient.js';
-import { AppError } from '../types/AppError.js';
 import { contextualizeError } from '../libs/contextualizeError.js';
+import { Result } from '../libs/Result.js';
 
 interface DBUser {
   id: string;
@@ -35,9 +30,7 @@ function toUser(dbUser: DBUser): User {
 export class UserStore {
   constructor(private postgreSQLClient: PostgreSQLClient) {}
 
-  async get(
-    username: string,
-  ): Promise<ResultOK<User> | ResultFail<AppError>> {
+  async get(username: string) {
     const resDBUsers = await this.postgreSQLClient.query<
       DBUser[]
     >((knex) => {
@@ -54,10 +47,10 @@ export class UserStore {
       );
     }
 
-    const dbUser = resDBUsers.value[0];
+    const dbUser = resDBUsers.getValue()[0];
 
     if (!dbUser) {
-      return result.fail({
+      return Result.failure({
         code: Code.NotFound,
         message: `UserStore.get User not found ${username}.`,
       });
@@ -65,6 +58,6 @@ export class UserStore {
 
     const user = toUser(dbUser);
 
-    return result.ok(user);
+    return Result.success(user);
   }
 }

@@ -1,4 +1,4 @@
-import { Result } from './result.js';
+import { Result } from './Result.js';
 
 const MaybeUnitType = {
   Just: 0,

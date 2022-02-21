@@ -1,3 +1,4 @@
+/*
 const ResultUnitType = {
   Success: 0,
   Error: 1,
@@ -27,6 +28,18 @@ export class Result<T, U> {
   isFailure() {
     return this.#type === ResultUnitType.Error;
   }
+  getValue() {
+    if (this.isFailure()) {
+      throw new Error('Cannot get the value of failure.');
+    }
+    return this.#value;
+  }
+  getError() {
+    if (this.isSuccess()) {
+      throw new Error('Cannot get the error of success.');
+    }
+    return this.#error;
+  }
   toJSON() {
     return JSON.stringify({
       type: this.#type,
@@ -42,18 +55,6 @@ export class Result<T, U> {
     return object.type === ResultUnitType.Success
       ? Result.success(object.value)
       : Result.failure(object.error);
-  }
-  getValue() {
-    if (this.isFailure()) {
-      throw new Error('Cannot get the value of failure.');
-    }
-    return this.#value;
-  }
-  getError() {
-    if (this.isSuccess()) {
-      throw new Error('Cannot get the error of success.');
-    }
-    return this.#error;
   }
   map<V>(fn: (value: T) => V) {
     if (this.isFailure()) {
@@ -87,5 +88,45 @@ export class Result<T, U> {
       this.#value;
     }
     return fn(this.#error);
+  }
+}
+*/
+
+export class ResultSuccess<T> {
+  isSuccess = true as const;
+  isFailure = false as const;
+  #value: T;
+  constructor(value: T) {
+    this.#value = value;
+  }
+  getValue() {
+    return this.#value;
+  }
+  getError() {
+    throw new Error('Cannot get the error of success.');
+  }
+}
+
+export class ResultFailure<T> {
+  isSuccess = false as const;
+  isFailure = true as const;
+  #error: T;
+  constructor(error: T) {
+    this.#error = error;
+  }
+  getValue() {
+    throw new Error('Cannot get the value of failure.');
+  }
+  getError() {
+    return this.#error;
+  }
+}
+
+export class Result {
+  static success<T>(value: T) {
+    return new ResultSuccess<T>(value);
+  }
+  static failure<T>(error: T) {
+    return new ResultFailure<T>(error);
   }
 }

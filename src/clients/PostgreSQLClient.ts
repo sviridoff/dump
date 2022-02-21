@@ -1,9 +1,9 @@
 import Knex, { Knex as KnexType } from 'knex';
-import { Code, result } from '@daisugi/kintsugi';
+import { Code } from '@daisugi/kintsugi';
 
-interface Query {
-  (knex: KnexType): Promise<any>;
-}
+import { Result } from '../libs/Result.js';
+
+type Query = (knex: KnexType) => Promise<any>;
 
 export class PostgreSQLClient {
   private knex;
@@ -31,9 +31,9 @@ export class PostgreSQLClient {
     try {
       const response: T = await queryBuilder(this.knex);
 
-      return result.ok(response);
+      return Result.success(response);
     } catch (error: any) {
-      return result.fail({
+      return Result.failure({
         code: Code.UnexpectedError,
         message: `PostgreSQLClient.query ${error.message}`,
       });
