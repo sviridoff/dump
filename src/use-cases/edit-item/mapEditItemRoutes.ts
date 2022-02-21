@@ -1,9 +1,9 @@
-import { ServiceRoute } from '../../types/ServiceRoute.js';
-import { ServiceController } from '../../types/ServiceController.js';
+import { AppRoute } from '../../types/AppRoute.js';
+import { AppController } from '../../types/AppController.js';
 
 export function mapEditItemRoutes(
-  editItemController: ServiceController,
-): ServiceRoute[] {
+  editItemController: AppController,
+): AppRoute[] {
   return [
     {
       method: 'GET',

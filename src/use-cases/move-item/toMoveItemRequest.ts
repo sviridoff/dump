@@ -1,13 +1,13 @@
 import { Code, result } from '@daisugi/kintsugi';
 import joi from 'joi';
 
-import { ServiceRequest } from '../../types/ServiceController.js';
+import { AppRequest } from '../../types/AppController.js';
 
 const schema = joi.object({
   toItemSlug: joi.string().required(),
 });
 
-export function toMoveItemRequest(request: ServiceRequest) {
+export function toMoveItemRequest(request: AppRequest) {
   const response = schema.validate(request.body, {
     allowUnknown: true,
     stripUnknown: true,

@@ -1,23 +1,21 @@
 import { result } from '@daisugi/kintsugi';
 
 import {
-  ServiceController,
-  ServiceReply,
-  ServiceRequest,
-} from '../../types/ServiceController.js';
+  AppController,
+  AppReply,
+  AppRequest,
+} from '../../types/AppController.js';
 import { toShowItemPresenter } from './toShowItemPresenter.js';
 import { ItemStore } from '../../stores/ItemStore.js';
 import { UserStore } from '../../stores/UserStore.js';
 
-export class ShowItemController
-  implements ServiceController
-{
+export class ShowItemController implements AppController {
   constructor(
     private itemStore: ItemStore,
     private userStore: UserStore,
   ) {}
 
-  async handler(request: ServiceRequest): ServiceReply {
+  async handler(request: AppRequest): AppReply {
     const { username, itemSlug } = request.params;
 
     const resUser = await this.userStore.get(username);

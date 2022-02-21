@@ -1,6 +1,6 @@
 import { Code } from '@daisugi/kintsugi';
 
-export interface ServiceError {
+export interface AppError {
   code: Code;
   message: string;
 }

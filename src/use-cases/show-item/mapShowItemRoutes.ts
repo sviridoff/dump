@@ -1,5 +1,5 @@
-import { ServiceRoute } from '../../types/ServiceRoute.js';
-import { ServiceController } from '../../types/ServiceController.js';
+import { AppRoute } from '../../types/AppRoute.js';
+import { AppController } from '../../types/AppController.js';
 
 export function urlToShowItem(
   username: string,
@@ -9,8 +9,8 @@ export function urlToShowItem(
 }
 
 export function mapShowItemRoutes(
-  showItemController: ServiceController,
-): ServiceRoute[] {
+  showItemController: AppController,
+): AppRoute[] {
   return [
     {
       method: 'GET',

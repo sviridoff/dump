@@ -17,7 +17,7 @@ import {
   diRoutesManifestTokens,
 } from './buildDIManifest.js';
 import { validateEnvs } from './validateEnvs.js';
-import { ServiceRoute } from './types/ServiceRoute.js';
+import { AppRoute } from './types/AppRoute.js';
 
 const __dirname = path.dirname(
   fileURLToPath(import.meta.url),
@@ -30,7 +30,7 @@ function registerRoutes(
 ) {
   diRoutesManifestTokens.forEach(
     (diRoutesManifestToken) => {
-      const routes: ServiceRoute[] = container.resolve(
+      const routes: AppRoute[] = container.resolve(
         diRoutesManifestToken,
       );
 

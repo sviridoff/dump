@@ -1,7 +1,7 @@
 import { Code, result } from '@daisugi/kintsugi';
 import joi from 'joi';
 
-import { ServiceRequest } from '../../types/ServiceController.js';
+import { AppRequest } from '../../types/AppController.js';
 
 const schema = joi.object({
   childItemTitle: joi.string().required(),
@@ -12,9 +12,7 @@ const schema = joi.object({
     .default(false),
 });
 
-export function toCreateItemRequest(
-  request: ServiceRequest,
-) {
+export function toCreateItemRequest(request: AppRequest) {
   const response = schema.validate(request.body, {
     allowUnknown: true,
     stripUnknown: true,

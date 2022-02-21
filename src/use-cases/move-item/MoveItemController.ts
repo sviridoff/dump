@@ -1,10 +1,10 @@
 import { result } from '@daisugi/kintsugi';
 
 import {
-  ServiceController,
-  ServiceReply,
-  ServiceRequest,
-} from '../../types/ServiceController.js';
+  AppController,
+  AppReply,
+  AppRequest,
+} from '../../types/AppController.js';
 import { ItemStore } from '../../stores/ItemStore.js';
 import { UserStore } from '../../stores/UserStore.js';
 import { toMoveItemPresenter } from './toMoveItemPresenter.js';
@@ -12,15 +12,13 @@ import { resultPromiseAll } from '../../libs/resultPromiseAll.js';
 import { urlToShowItem } from '../show-item/mapShowItemRoutes.js';
 import { toMoveItemRequest } from './toMoveItemRequest.js';
 
-export class MoveItemController
-  implements ServiceController
-{
+export class MoveItemController implements AppController {
   constructor(
     private itemStore: ItemStore,
     private userStore: UserStore,
   ) {}
 
-  async handler(request: ServiceRequest): ServiceReply {
+  async handler(request: AppRequest): AppReply {
     const { method } = request;
     const { username, itemSlug } = request.params;
 

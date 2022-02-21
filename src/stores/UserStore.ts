@@ -6,7 +6,7 @@ import {
 } from '@daisugi/kintsugi';
 
 import { PostgreSQLClient } from '../clients/PostgreSQLClient.js';
-import { ServiceError } from '../types/ServiceError.js';
+import { AppError } from '../types/AppError.js';
 import { contextualizeError } from '../libs/contextualizeError.js';
 
 interface DBUser {
@@ -37,7 +37,7 @@ export class UserStore {
 
   async get(
     username: string,
-  ): Promise<ResultOK<User> | ResultFail<ServiceError>> {
+  ): Promise<ResultOK<User> | ResultFail<AppError>> {
     const resDBUsers = await this.postgreSQLClient.query<
       DBUser[]
     >((knex) => {

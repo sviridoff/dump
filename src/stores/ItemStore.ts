@@ -7,7 +7,7 @@ import {
 import { randomUUID } from 'node:crypto';
 
 import { PostgreSQLClient } from '../clients/PostgreSQLClient.js';
-import { ServiceError } from '../types/ServiceError.js';
+import { AppError } from '../types/AppError.js';
 import { toSlug } from '../libs/toSlug.js';
 import { contextualizeError } from '../libs/contextualizeError.js';
 
@@ -47,7 +47,7 @@ export class ItemStore {
   async getBySlug(
     userId: string,
     itemSlug: string,
-  ): Promise<ResultOK<Item> | ResultFail<ServiceError>> {
+  ): Promise<ResultOK<Item> | ResultFail<AppError>> {
     const resDBItems = await this.postgreSQLClient.query<
       DBItem[]
     >((knex) => {
@@ -79,7 +79,7 @@ export class ItemStore {
   async getById(
     userId: string,
     itemId: string,
-  ): Promise<ResultOK<Item> | ResultFail<ServiceError>> {
+  ): Promise<ResultOK<Item> | ResultFail<AppError>> {
     const resDBItems = await this.postgreSQLClient.query<
       DBItem[]
     >((knex) => {
@@ -111,7 +111,7 @@ export class ItemStore {
   async deleteBySlug(
     userId: string,
     itemSlug: string,
-  ): Promise<ResultOK<null> | ResultFail<ServiceError>> {
+  ): Promise<ResultOK<null> | ResultFail<AppError>> {
     const resDB = await this.postgreSQLClient.query<number>(
       (knex) => {
         return knex
@@ -140,7 +140,7 @@ export class ItemStore {
 
   async getChild(
     parentItemId: string,
-  ): Promise<ResultOK<Item[]> | ResultFail<ServiceError>> {
+  ): Promise<ResultOK<Item[]> | ResultFail<AppError>> {
     const resDBChildItems =
       await this.postgreSQLClient.query<DBItem[]>(
         (knex) => {
@@ -275,7 +275,7 @@ export class ItemStore {
   async getExcept(
     userId: string,
     itemSlug: string,
-  ): Promise<ResultOK<Item[]> | ResultFail<ServiceError>> {
+  ): Promise<ResultOK<Item[]> | ResultFail<AppError>> {
     const resDBItems = await this.postgreSQLClient.query<
       DBItem[]
     >((knex) => {

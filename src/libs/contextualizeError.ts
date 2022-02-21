@@ -1,9 +1,9 @@
 import { ResultFail } from '@daisugi/kintsugi';
 
-import { ServiceError } from '../types/ServiceError.js';
+import { AppError } from '../types/AppError.js';
 
 export function contextualizeError(
-  resultFail: ResultFail<ServiceError>,
+  resultFail: ResultFail<AppError>,
   prefixMessage: string,
 ) {
   resultFail.error.message = `${prefixMessage} ${resultFail.error.message}.`;
