@@ -38,7 +38,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["@daisugi/kado", "npm:0.1.10"],
             ["@daisugi/kintsugi", "npm:0.3.9"],
             ["@types/ejs", "npm:3.1.0"],
-            ["@types/node", "npm:17.0.5"],
+            ["@types/node", "npm:17.0.19"],
             ["@typescript-eslint/eslint-plugin", "virtual:850ec5dafba0b7e7fb341d89f9de476e4505ce2567691e593f8fa174e2cf9197a96177869fb182a02c6fbdb9872ed8316e4a019b8999326c0c6bde687335e50c#npm:5.8.1"],
             ["@typescript-eslint/parser", "virtual:850ec5dafba0b7e7fb341d89f9de476e4505ce2567691e593f8fa174e2cf9197a96177869fb182a02c6fbdb9872ed8316e4a019b8999326c0c6bde687335e50c#npm:5.8.1"],
             ["copyfiles", "npm:2.4.1"],
@@ -225,10 +225,10 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
         }]
       ]],
       ["@types/node", [
-        ["npm:17.0.5", {
-          "packageLocation": "./.yarn/cache/@types-node-npm-17.0.5-78c23cecdc-105535e787.zip/node_modules/@types/node/",
+        ["npm:17.0.19", {
+          "packageLocation": "./.yarn/cache/@types-node-npm-17.0.19-6c96c4528c-6bbd35bfc2.zip/node_modules/@types/node/",
           "packageDependencies": [
-            ["@types/node", "npm:17.0.5"]
+            ["@types/node", "npm:17.0.19"]
           ],
           "linkType": "HARD",
         }]
@@ -903,7 +903,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["@daisugi/kado", "npm:0.1.10"],
             ["@daisugi/kintsugi", "npm:0.3.9"],
             ["@types/ejs", "npm:3.1.0"],
-            ["@types/node", "npm:17.0.5"],
+            ["@types/node", "npm:17.0.19"],
             ["@typescript-eslint/eslint-plugin", "virtual:850ec5dafba0b7e7fb341d89f9de476e4505ce2567691e593f8fa174e2cf9197a96177869fb182a02c6fbdb9872ed8316e4a019b8999326c0c6bde687335e50c#npm:5.8.1"],
             ["@typescript-eslint/parser", "virtual:850ec5dafba0b7e7fb341d89f9de476e4505ce2567691e593f8fa174e2cf9197a96177869fb182a02c6fbdb9872ed8316e4a019b8999326c0c6bde687335e50c#npm:5.8.1"],
             ["copyfiles", "npm:2.4.1"],

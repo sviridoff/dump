@@ -1,5 +1,6 @@
 import { Code } from '@daisugi/kintsugi';
 import { randomUUID } from 'node:crypto';
+import { Knex as KnexType } from 'knex';
 
 import { PostgreSQLClient } from '../clients/PostgreSQLClient.js';
 import { toSlug } from '../libs/toSlug.js';
@@ -39,13 +40,10 @@ function toItems(dbChildItems: DBItem[]): Item[] {
 export class ItemStore {
   constructor(private postgreSQLClient: PostgreSQLClient) {}
 
-  async getBySlug(
-    userId: string,
-    itemSlug: string,
-  ) {
+  async getBySlug(userId: string, itemSlug: string) {
     const resDBItems = await this.postgreSQLClient.query<
       DBItem[]
-    >((knex) => {
+    >((knex: KnexType) => {
       return knex
         .where({ slug: itemSlug, user_id: userId })
         .select('*')
@@ -71,13 +69,10 @@ export class ItemStore {
     return Result.success(toItem(dbItem));
   }
 
-  async getById(
-    userId: string,
-    itemId: string,
-  ) {
+  async getById(userId: string, itemId: string) {
     const resDBItems = await this.postgreSQLClient.query<
       DBItem[]
-    >((knex) => {
+    >((knex: KnexType) => {
       return knex
         .where({ id: itemId, user_id: userId })
         .select('*')
@@ -103,12 +98,9 @@ export class ItemStore {
     return Result.success(toItem(dbItem));
   }
 
-  async deleteBySlug(
-    userId: string,
-    itemSlug: string,
-  ) {
+  async deleteBySlug(userId: string, itemSlug: string) {
     const resDB = await this.postgreSQLClient.query<number>(
-      (knex) => {
+      (knex: KnexType) => {
         return knex
           .where({ slug: itemSlug, user_id: userId })
           .del()
@@ -133,12 +125,10 @@ export class ItemStore {
     return Result.success(null);
   }
 
-  async getChild(
-    parentItemId: string,
-  ) {
+  async getChild(parentItemId: string) {
     const resDBChildItems =
       await this.postgreSQLClient.query<DBItem[]>(
-        (knex) => {
+        (knex: KnexType) => {
           const dbChildItemIds = knex
             .where({ parent_item_id: parentItemId })
             .select('child_item_id')
@@ -172,25 +162,27 @@ export class ItemStore {
     const childItemId = randomUUID();
 
     const resResponse = await this.postgreSQLClient.query(
-      (knex) => {
-        return knex.transaction(async (transaction) => {
-          await transaction
-            .insert({
-              id: childItemId,
-              title: childItemTitle,
-              slug: toSlug(childItemTitle),
-              user_id: userId,
-              is_private: childItemIsPrivate,
-            })
-            .into('item');
+      (knex: KnexType) => {
+        return knex.transaction(
+          async (transaction: KnexType.Transaction) => {
+            await transaction
+              .insert({
+                id: childItemId,
+                title: childItemTitle,
+                slug: toSlug(childItemTitle),
+                user_id: userId,
+                is_private: childItemIsPrivate,
+              })
+              .into('item');
 
-          await transaction
-            .insert({
-              parent_item_id: parentItemId,
-              child_item_id: childItemId,
-            })
-            .into('item_item');
-        });
+            await transaction
+              .insert({
+                parent_item_id: parentItemId,
+                child_item_id: childItemId,
+              })
+              .into('item_item');
+          },
+        );
       },
     );
 
@@ -211,7 +203,7 @@ export class ItemStore {
     newItemIsPrivate: boolean,
   ) {
     const resResponse = await this.postgreSQLClient.query(
-      (knex) => {
+      (knex: KnexType) => {
         return knex
           .update({
             title: newItemTitle,
@@ -233,9 +225,10 @@ export class ItemStore {
     return Result.success(resResponse.getValue());
   }
 
+  /*
   async move(itemSlug: string, toItemSlug: string) {
     const resResponse = await this.postgreSQLClient.query(
-      (knex) => {
+      (knex: KnexType) => {
         return knex.transaction(async (transaction) => {
           await transaction
             .insert({
@@ -266,14 +259,12 @@ export class ItemStore {
 
     return Result.success(resResponse.getValue());
   }
+  */
 
-  async getExcept(
-    userId: string,
-    itemSlug: string,
-  ) {
+  async getExcept(userId: string, itemSlug: string) {
     const resDBItems = await this.postgreSQLClient.query<
       DBItem[]
-    >((knex) => {
+    >((knex: KnexType) => {
       return knex
         .where('user_id', userId)
         .whereNot('slug', itemSlug)

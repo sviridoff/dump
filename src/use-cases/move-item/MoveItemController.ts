@@ -58,6 +58,11 @@ export class MoveItemController implements AppController {
       return moveItemRequest;
     }
 
+    return Result.success({
+      redirectToURL: urlToShowItem(username, itemSlug),
+    });
+
+    /*
     const { toItemSlug } = moveItemRequest.getValue();
 
     const res = await this.itemStore.move(
@@ -72,5 +77,6 @@ export class MoveItemController implements AppController {
     return Result.success({
       redirectToURL: urlToShowItem(username, itemSlug),
     });
+    */
   }
 }

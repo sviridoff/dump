@@ -1,4 +1,5 @@
 import { Code } from '@daisugi/kintsugi';
+import { Knex as KnexType } from 'knex';
 
 import { PostgreSQLClient } from '../clients/PostgreSQLClient.js';
 import { contextualizeError } from '../libs/contextualizeError.js';
@@ -33,7 +34,7 @@ export class UserStore {
   async get(username: string) {
     const resDBUsers = await this.postgreSQLClient.query<
       DBUser[]
-    >((knex) => {
+    >((knex: KnexType) => {
       return knex
         .where({ username })
         .select('*')

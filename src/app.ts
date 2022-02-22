@@ -105,7 +105,7 @@ async function startWEB() {
   try {
     await server.listen(3001, '0.0.0.0');
   } catch (error) {
-    server.log.getError()(error);
+    server.log.error(error);
 
     process.exit(1);
   }

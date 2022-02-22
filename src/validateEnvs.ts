@@ -34,9 +34,9 @@ export function validateEnvs(): Record<string, unknown> {
     stripUnknown: true,
   });
 
-  if (result.getError()) {
-    throw result.getError();
+  if (result.error) {
+    throw result.error;
   }
 
-  return result.getValue();
+  return result.value;
 }

@@ -1,6 +1,14 @@
-import { Result, ResultFailure, ResultSuccess } from './Result.js';
+import {
+  Result,
+  ResultFailure,
+  ResultSuccess,
+} from './Result.js';
 
-async function handleResult(whenResult: Promise<ResultFailure | ResultSuccess>) {
+async function handleResult(
+  whenResult: Promise<
+    ResultFailure<any> | ResultSuccess<any>
+  >,
+) {
   const response = await whenResult;
 
   if (response.isFailure) {
@@ -11,8 +19,10 @@ async function handleResult(whenResult: Promise<ResultFailure | ResultSuccess>) 
 }
 
 export async function resultPromiseAll(
-  results: Promise<Result>[],
-): Promise<Result> {
+  results: Promise<
+    ResultFailure<any> | ResultSuccess<any>
+  >[],
+): Promise<ResultFailure<any> | ResultSuccess<any>> {
   const handledResults = results.map(handleResult);
 
   try {

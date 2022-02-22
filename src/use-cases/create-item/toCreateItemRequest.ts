@@ -19,12 +19,12 @@ export function toCreateItemRequest(request: AppRequest) {
     stripUnknown: true,
   });
 
-  if (response.getError()) {
+  if (response.error) {
     return Result.failure({
       code: Code.BadRequest,
-      message: response.getError().message,
+      message: response.error.message,
     });
   }
 
-  return Result.success(response.getValue());
+  return Result.success(response.value);
 }

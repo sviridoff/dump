@@ -3,9 +3,9 @@
   "packageManager": "yarn@3.1.1",
   "type": "module",
   "scripts": {
-    "start": "tsc && yarn run copy:files && node dist/service.js",
+    "start": "tsc && yarn run copy:files && node dist/app.js",
     "watch:server": "rm -rf dist && tsc-watch --onSuccess 'yarn run start:server'",
-    "start:server": "yarn run copy:files && node --inspect=0.0.0.0:9229 dist/service.js",
+    "start:server": "yarn run copy:files && node --inspect=0.0.0.0:9229 dist/app.js",
     "copy:files": "copyfiles -u 1 src/**/*.ejs dist",
     "db": "knex --knexfile knexfile.cjs migrate:latest && knex --knexfile knexfile.cjs seed:run"
   },
@@ -24,7 +24,7 @@
   },
   "devDependencies": {
     "@types/ejs": "^3.1.0",
-    "@types/node": "^17.0.5",
+    "@types/node": "^17.0.19",
     "@typescript-eslint/eslint-plugin": "^5.8.1",
     "@typescript-eslint/parser": "^5.8.1",
     "copyfiles": "^2.4.1",
