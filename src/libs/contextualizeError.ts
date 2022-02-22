@@ -1,5 +1,5 @@
-import { AppError } from '../types/AppError.js';
 import { ResultFailure } from '../libs/Result.js';
+import { AppError } from '../libs/Error.js';
 
 export function contextualizeError(
   resultFail: ResultFailure<AppError>,

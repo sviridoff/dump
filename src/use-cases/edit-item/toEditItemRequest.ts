@@ -1,8 +1,8 @@
-import { Code } from '@daisugi/kintsugi';
 import joi from 'joi';
 
 import { AppRequest } from '../../types/AppController.js';
 import { Result } from '../../libs/Result.js';
+import { InvalidArgument } from '../../libs/Error.js';
 
 const schema = joi.object({
   newItemTitle: joi.string().required(),
@@ -20,10 +20,7 @@ export function toEditItemRequest(request: AppRequest) {
   });
 
   if (response.error) {
-    return Result.failure({
-      code: Code.InvalidArgument,
-      message: response.error.message,
-    });
+    return new InvalidArgument(response.error.message);
   }
 
   return Result.success(response.value);

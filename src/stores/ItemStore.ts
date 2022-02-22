@@ -1,4 +1,3 @@
-import { Code } from '@daisugi/kintsugi';
 import { randomUUID } from 'node:crypto';
 import { Knex as KnexType } from 'knex';
 
@@ -6,6 +5,7 @@ import { PostgreSQLClient } from '../clients/PostgreSQLClient.js';
 import { toSlug } from '../libs/toSlug.js';
 import { contextualizeError } from '../libs/contextualizeError.js';
 import { Result } from '../libs/Result.js';
+import { NotFound } from '../libs/Error.js';
 
 export interface Item {
   id: string;
@@ -60,10 +60,9 @@ export class ItemStore {
     const dbItem = resDBItems.getValue()[0];
 
     if (!dbItem) {
-      return Result.failure({
-        code: Code.NotFound,
-        message: `ItemStore.getBySlug Item not found ${userId} ${itemSlug}.`,
-      });
+      return new NotFound(
+        `ItemStore.getBySlug Item not found ${userId} ${itemSlug}.`,
+      );
     }
 
     return Result.success(toItem(dbItem));
@@ -89,10 +88,9 @@ export class ItemStore {
     const dbItem = resDBItems.getValue()[0];
 
     if (!dbItem) {
-      return Result.failure({
-        code: Code.NotFound,
-        message: `ItemStore.getById Item not found ${userId} ${itemId}.`,
-      });
+      return new NotFound(
+        `ItemStore.getById Item not found ${userId} ${itemId}.`,
+      );
     }
 
     return Result.success(toItem(dbItem));
@@ -116,10 +114,9 @@ export class ItemStore {
     }
 
     if (!resDB.getValue()) {
-      return Result.failure({
-        code: Code.NotFound,
-        message: `ItemStore.deleteBySlug Item not found ${userId} ${itemSlug}.`,
-      });
+      return new NotFound(
+        `ItemStore.deleteBySlug Item not found ${userId} ${itemSlug}.`,
+      );
     }
 
     return Result.success(null);

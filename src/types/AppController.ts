@@ -1,5 +1,8 @@
-import { AppError } from './AppError.js';
-import { ResultSuccess, ResultFailure } from '../libs/Result.js';
+import { AppError } from '../libs/Error.js';
+import {
+  ResultSuccess,
+  ResultFailure,
+} from '../libs/Result.js';
 
 export interface AppRequest {
   params: Record<string, any>;
@@ -13,7 +16,9 @@ interface AppReplyConfig {
   redirectToURL?: string;
 }
 
-export type AppReply = Promise<ResultSuccess<AppReplyConfig> | ResultFailure<AppError>>;
+export type AppReply = Promise<
+  ResultSuccess<AppReplyConfig> | ResultFailure<AppError>
+>;
 
 export interface AppController {
   handler(request: AppRequest): AppReply;
