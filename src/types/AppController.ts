@@ -1,6 +1,5 @@
-import { ResultOK, ResultFail } from '@daisugi/kintsugi';
-
 import { AppError } from './AppError.js';
+import { ResultSuccess, ResultFailure } from '../libs/Result.js';
 
 export interface AppRequest {
   params: Record<string, any>;
@@ -14,9 +13,7 @@ interface AppReplyConfig {
   redirectToURL?: string;
 }
 
-export type AppReply = Promise<
-  ResultOK<AppReplyConfig> | ResultFail<AppError>
->;
+export type AppReply = Promise<ResultSuccess<AppReplyConfig> | ResultFailure<AppError>>;
 
 export interface AppController {
   handler(request: AppRequest): AppReply;

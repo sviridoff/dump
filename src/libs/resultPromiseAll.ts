@@ -1,13 +1,13 @@
-import { Result, result } from '@daisugi/kintsugi';
+import { Result, ResultFailure, ResultSuccess } from './Result.js';
 
-async function handleResult(whenResult: Promise<Result>) {
+async function handleResult(whenResult: Promise<ResultFailure | ResultSuccess>) {
   const response = await whenResult;
 
   if (response.isFailure) {
     return Promise.reject(response);
   }
 
-  return response.value;
+  return response.getValue();
 }
 
 export async function resultPromiseAll(
@@ -18,7 +18,7 @@ export async function resultPromiseAll(
   try {
     const values = await Promise.all(handledResults);
 
-    return result.ok(values);
+    return Result.success(values);
   } catch (error: any) {
     // We propagate result error.
     return error;

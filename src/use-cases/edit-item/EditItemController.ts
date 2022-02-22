@@ -1,5 +1,3 @@
-import { result } from '@daisugi/kintsugi';
-
 import {
   AppController,
   AppReply,
@@ -11,6 +9,7 @@ import { toEditItemPresenter } from './toEditItemPresenter.js';
 import { toEditItemRequest } from './toEditItemRequest.js';
 import { toSlug } from '../../libs/toSlug.js';
 import { urlToShowItem } from '../show-item/mapShowItemRoutes.js';
+import { Result } from '../../libs/Result.js';
 
 export class EditItemController implements AppController {
   constructor(
@@ -28,7 +27,7 @@ export class EditItemController implements AppController {
       return resUser;
     }
 
-    const userId = resUser.value.id;
+    const userId = resUser.getValue().id;
 
     const resItem = await this.itemStore.getBySlug(
       userId,
@@ -40,12 +39,12 @@ export class EditItemController implements AppController {
     }
 
     if (method === 'GET') {
-      return result.ok({
+      return Result.success({
         templatePath:
           'use-cases/edit-item/templates/edit-item.ejs',
         templateData: toEditItemPresenter(
-          resItem.value,
-          resUser.value,
+          resItem.getValue(),
+          resUser.getValue(),
         ),
       });
     }
@@ -59,10 +58,10 @@ export class EditItemController implements AppController {
     }
 
     const { newItemTitle, newItemIsPrivate } =
-      resEditItemRequest.value;
+      resEditItemRequest.getValue();
 
     const newItemSlug = toSlug(newItemTitle);
-    const itemId = resItem.value.id;
+    const itemId = resItem.getValue().id;
 
     const res = await this.itemStore.edit(
       itemId,
@@ -75,7 +74,7 @@ export class EditItemController implements AppController {
       return res;
     }
 
-    return result.ok({
+    return Result.success({
       redirectToURL: urlToShowItem(username, newItemSlug),
     });
   }

@@ -1,5 +1,3 @@
-import { result } from '@daisugi/kintsugi';
-
 import {
   AppController,
   AppReply,
@@ -11,6 +9,7 @@ import { toMoveItemPresenter } from './toMoveItemPresenter.js';
 import { resultPromiseAll } from '../../libs/resultPromiseAll.js';
 import { urlToShowItem } from '../show-item/mapShowItemRoutes.js';
 import { toMoveItemRequest } from './toMoveItemRequest.js';
+import { Result } from '../../libs/Result.js';
 
 export class MoveItemController implements AppController {
   constructor(
@@ -29,7 +28,7 @@ export class MoveItemController implements AppController {
         return resUser;
       }
 
-      const userId = resUser.value.id;
+      const userId = resUser.getValue().id;
 
       const res = await resultPromiseAll([
         this.itemStore.getBySlug(userId, itemSlug),
@@ -40,15 +39,15 @@ export class MoveItemController implements AppController {
         return res;
       }
 
-      const [item, items] = res.value;
+      const [item, items] = res.getValue();
 
-      return result.ok({
+      return Result.success({
         templatePath:
           'use-cases/move-item/templates/move-item.ejs',
         templateData: toMoveItemPresenter(
           item,
           items,
-          resUser.value,
+          resUser.getValue(),
         ),
       });
     }
@@ -59,7 +58,7 @@ export class MoveItemController implements AppController {
       return moveItemRequest;
     }
 
-    const { toItemSlug } = moveItemRequest.value;
+    const { toItemSlug } = moveItemRequest.getValue();
 
     const res = await this.itemStore.move(
       itemSlug,
@@ -70,7 +69,7 @@ export class MoveItemController implements AppController {
       return res;
     }
 
-    return result.ok({
+    return Result.success({
       redirectToURL: urlToShowItem(username, itemSlug),
     });
   }

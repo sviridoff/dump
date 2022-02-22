@@ -1,5 +1,3 @@
-import { result } from '@daisugi/kintsugi';
-
 import {
   AppController,
   AppReply,
@@ -11,6 +9,7 @@ import { urlToShowItem } from '../show-item/mapShowItemRoutes.js';
 import { toCreateItemPresenter } from './toCreateItemPresenter.js';
 import { toCreateItemRequest } from './toCreateItemRequest.js';
 import { toSlug } from '../../libs/toSlug.js';
+import { Result } from '../../libs/Result.js';
 
 export class CreateItemController implements AppController {
   constructor(
@@ -28,7 +27,7 @@ export class CreateItemController implements AppController {
       return resUser;
     }
 
-    const userId = resUser.value.id;
+    const userId = resUser.getValue().id;
 
     const resItem = await this.itemStore.getBySlug(
       userId,
@@ -40,12 +39,12 @@ export class CreateItemController implements AppController {
     }
 
     if (method === 'GET') {
-      return result.ok({
+      return Result.success({
         templatePath:
           'use-cases/create-item/templates/create-item.ejs',
         templateData: toCreateItemPresenter(
-          resItem.value,
-          resUser.value,
+          resItem.getValue(),
+          resUser.getValue(),
         ),
       });
     }
@@ -60,7 +59,7 @@ export class CreateItemController implements AppController {
     }
 
     const { childItemTitle, childItemIsPrivate } =
-      resCreateItemRequest.value;
+      resCreateItemRequest.getValue();
 
     const childItemSlug = toSlug(childItemTitle);
 
@@ -70,17 +69,17 @@ export class CreateItemController implements AppController {
     );
 
     if (resChildItem.isSuccess) {
-      return result.ok({
+      return Result.success({
         templatePath:
           'use-cases/create-item/templates/create-item.ejs',
         templateData: toCreateItemPresenter(
-          resItem.value,
-          resUser.value,
+          resItem.getValue(),
+          resUser.getValue(),
         ),
       });
     }
 
-    const parentItemId = resItem.value.id;
+    const parentItemId = resItem.getValue().id;
 
     const res = await this.itemStore.create(
       userId,
@@ -93,7 +92,7 @@ export class CreateItemController implements AppController {
       return res;
     }
 
-    return result.ok({
+    return Result.success({
       redirectToURL: urlToShowItem(username, itemSlug),
     });
   }

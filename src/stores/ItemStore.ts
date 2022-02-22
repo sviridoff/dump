@@ -1,15 +1,10 @@
-import {
-  Code,
-  result,
-  ResultFail,
-  ResultOK,
-} from '@daisugi/kintsugi';
+import { Code } from '@daisugi/kintsugi';
 import { randomUUID } from 'node:crypto';
 
 import { PostgreSQLClient } from '../clients/PostgreSQLClient.js';
-import { AppError } from '../types/AppError.js';
 import { toSlug } from '../libs/toSlug.js';
 import { contextualizeError } from '../libs/contextualizeError.js';
+import { Result } from '../libs/Result.js';
 
 export interface Item {
   id: string;
@@ -47,7 +42,7 @@ export class ItemStore {
   async getBySlug(
     userId: string,
     itemSlug: string,
-  ): Promise<ResultOK<Item> | ResultFail<AppError>> {
+  ) {
     const resDBItems = await this.postgreSQLClient.query<
       DBItem[]
     >((knex) => {
@@ -64,22 +59,22 @@ export class ItemStore {
       );
     }
 
-    const dbItem = resDBItems.value[0];
+    const dbItem = resDBItems.getValue()[0];
 
     if (!dbItem) {
-      return result.fail({
+      return Result.failure({
         code: Code.NotFound,
         message: `ItemStore.getBySlug Item not found ${userId} ${itemSlug}.`,
       });
     }
 
-    return result.ok(toItem(dbItem));
+    return Result.success(toItem(dbItem));
   }
 
   async getById(
     userId: string,
     itemId: string,
-  ): Promise<ResultOK<Item> | ResultFail<AppError>> {
+  ) {
     const resDBItems = await this.postgreSQLClient.query<
       DBItem[]
     >((knex) => {
@@ -96,22 +91,22 @@ export class ItemStore {
       );
     }
 
-    const dbItem = resDBItems.value[0];
+    const dbItem = resDBItems.getValue()[0];
 
     if (!dbItem) {
-      return result.fail({
+      return Result.failure({
         code: Code.NotFound,
         message: `ItemStore.getById Item not found ${userId} ${itemId}.`,
       });
     }
 
-    return result.ok(toItem(dbItem));
+    return Result.success(toItem(dbItem));
   }
 
   async deleteBySlug(
     userId: string,
     itemSlug: string,
-  ): Promise<ResultOK<null> | ResultFail<AppError>> {
+  ) {
     const resDB = await this.postgreSQLClient.query<number>(
       (knex) => {
         return knex
@@ -128,19 +123,19 @@ export class ItemStore {
       );
     }
 
-    if (!resDB.value) {
-      return result.fail({
+    if (!resDB.getValue()) {
+      return Result.failure({
         code: Code.NotFound,
         message: `ItemStore.deleteBySlug Item not found ${userId} ${itemSlug}.`,
       });
     }
 
-    return result.ok(null);
+    return Result.success(null);
   }
 
   async getChild(
     parentItemId: string,
-  ): Promise<ResultOK<Item[]> | ResultFail<AppError>> {
+  ) {
     const resDBChildItems =
       await this.postgreSQLClient.query<DBItem[]>(
         (knex) => {
@@ -163,9 +158,9 @@ export class ItemStore {
       );
     }
 
-    const dbChildItems = resDBChildItems.value;
+    const dbChildItems = resDBChildItems.getValue();
 
-    return result.ok(toItems(dbChildItems));
+    return Result.success(toItems(dbChildItems));
   }
 
   async create(
@@ -206,7 +201,7 @@ export class ItemStore {
       );
     }
 
-    return result.ok(resResponse.value);
+    return Result.success(resResponse.getValue());
   }
 
   async edit(
@@ -235,7 +230,7 @@ export class ItemStore {
       );
     }
 
-    return result.ok(resResponse.value);
+    return Result.success(resResponse.getValue());
   }
 
   async move(itemSlug: string, toItemSlug: string) {
@@ -269,13 +264,13 @@ export class ItemStore {
       );
     }
 
-    return result.ok(resResponse.value);
+    return Result.success(resResponse.getValue());
   }
 
   async getExcept(
     userId: string,
     itemSlug: string,
-  ): Promise<ResultOK<Item[]> | ResultFail<AppError>> {
+  ) {
     const resDBItems = await this.postgreSQLClient.query<
       DBItem[]
     >((knex) => {
@@ -293,8 +288,8 @@ export class ItemStore {
       );
     }
 
-    const dbItems = resDBItems.value;
+    const dbItems = resDBItems.getValue();
 
-    return result.ok(toItems(dbItems));
+    return Result.success(toItems(dbItems));
   }
 }

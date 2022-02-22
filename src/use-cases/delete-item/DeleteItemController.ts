@@ -1,5 +1,3 @@
-import { result } from '@daisugi/kintsugi';
-
 import {
   AppController,
   AppReply,
@@ -8,6 +6,7 @@ import {
 import { ItemStore } from '../../stores/ItemStore.js';
 import { UserStore } from '../../stores/UserStore.js';
 import { urlToShowItem } from '../show-item/mapShowItemRoutes.js';
+import { Result } from '../../libs/Result.js';
 
 export class DeleteItemController implements AppController {
   constructor(
@@ -24,7 +23,7 @@ export class DeleteItemController implements AppController {
       return resUser;
     }
 
-    const userId = resUser.value.id;
+    const userId = resUser.getValue().id;
 
     const resDeletion = await this.itemStore.deleteBySlug(
       userId,
@@ -35,7 +34,7 @@ export class DeleteItemController implements AppController {
       return resDeletion;
     }
 
-    const redirectItemId = resUser.value.itemId;
+    const redirectItemId = resUser.getValue().itemId;
 
     const resRedirectItem = await this.itemStore.getById(
       userId,
@@ -46,9 +45,9 @@ export class DeleteItemController implements AppController {
       return resRedirectItem;
     }
 
-    const redirectItemSlug = resRedirectItem.value.slug;
+    const redirectItemSlug = resRedirectItem.getValue().slug;
 
-    return result.ok({
+    return Result.success({
       redirectToURL: urlToShowItem(
         username,
         redirectItemSlug,

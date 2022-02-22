@@ -1,9 +1,6 @@
-import {
-  result,
-  ResultFail,
-  ResultOK,
-  Fn,
-} from '@daisugi/kintsugi';
+import { Fn } from '@daisugi/kintsugi';
+
+import { Result, ResultSuccess, ResultFailure } from '../libs/Result.js';
 
 export function resultFromThrowable<K>(
   fn: Fn,
@@ -12,11 +9,11 @@ export function resultFromThrowable<K>(
   return function (
     this: any,
     ...args: any[]
-  ): ResultOK<K> | ResultFail<any> {
+  ): ResultSuccess<K> | ResultFailure<any> {
     try {
-      return result.ok(fn.apply(this, args));
+      return Result.success(fn.apply(this, args));
     } catch (error) {
-      return result.fail(parseError(error));
+      return Result.failure(parseError(error));
     }
   };
 }

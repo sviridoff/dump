@@ -1,5 +1,3 @@
-import { result } from '@daisugi/kintsugi';
-
 import {
   AppController,
   AppReply,
@@ -8,6 +6,7 @@ import {
 import { toShowItemPresenter } from './toShowItemPresenter.js';
 import { ItemStore } from '../../stores/ItemStore.js';
 import { UserStore } from '../../stores/UserStore.js';
+import { Result } from '../../libs/Result.js';
 
 export class ShowItemController implements AppController {
   constructor(
@@ -24,7 +23,7 @@ export class ShowItemController implements AppController {
       return resUser;
     }
 
-    const userId = resUser.value.id;
+    const userId = resUser.getValue().id;
 
     const resItem = await this.itemStore.getBySlug(
       userId,
@@ -36,20 +35,20 @@ export class ShowItemController implements AppController {
     }
 
     const resItemChild = await this.itemStore.getChild(
-      resItem.value.id,
+      resItem.getValue().id,
     );
 
     if (resItemChild.isFailure) {
       return resItemChild;
     }
 
-    return result.ok({
+    return Result.success({
       templatePath:
         'use-cases/show-item/templates/show-item.ejs',
       templateData: toShowItemPresenter(
-        resItem.value,
-        resItemChild.value,
-        resUser.value,
+        resItem.getValue(),
+        resItemChild.getValue(),
+        resUser.getValue(),
       ),
     });
   }

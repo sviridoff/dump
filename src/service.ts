@@ -51,14 +51,14 @@ function registerRoutes(
             });
 
             if (response.isFailure) {
-              throw response.error;
+              throw response.getError();
             }
 
             const {
               redirectToURL,
               templatePath,
               templateData,
-            } = response.value;
+            } = response.getValue();
 
             if (redirectToURL) {
               return reply.redirect(redirectToURL);
@@ -105,7 +105,7 @@ async function startWEB() {
   try {
     await server.listen(3001, '0.0.0.0');
   } catch (error) {
-    server.log.error(error);
+    server.log.getError()(error);
 
     process.exit(1);
   }

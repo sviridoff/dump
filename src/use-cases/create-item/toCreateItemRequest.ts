@@ -1,7 +1,8 @@
-import { Code, result } from '@daisugi/kintsugi';
+import { Code } from '@daisugi/kintsugi';
 import joi from 'joi';
 
 import { AppRequest } from '../../types/AppController.js';
+import { Result } from '../../libs/Result.js';
 
 const schema = joi.object({
   childItemTitle: joi.string().required(),
@@ -18,12 +19,12 @@ export function toCreateItemRequest(request: AppRequest) {
     stripUnknown: true,
   });
 
-  if (response.error) {
-    return result.fail({
+  if (response.getError()) {
+    return Result.failure({
       code: Code.BadRequest,
-      message: response.error.message,
+      message: response.getError().message,
     });
   }
 
-  return result.ok(response.value);
+  return Result.success(response.getValue());
 }

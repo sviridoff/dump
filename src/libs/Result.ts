@@ -53,8 +53,8 @@ export class Result<T, U> {
   static fromJSON(json: string) {
     const object = JSON.parse(json);
     return object.type === ResultUnitType.Success
-      ? Result.success(object.value)
-      : Result.failure(object.error);
+      ? Result.success(object.getValue())
+      : Result.failure(object.getError());
   }
   map<V>(fn: (value: T) => V) {
     if (this.isFailure()) {
