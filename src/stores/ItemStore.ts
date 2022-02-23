@@ -5,7 +5,7 @@ import { PostgreSQLClient } from '../clients/PostgreSQLClient.js';
 import { toSlug } from '../libs/toSlug.js';
 import { contextualizeError } from '../libs/contextualizeError.js';
 import { Result } from '../libs/Result.js';
-import { NotFound } from '../libs/Error.js';
+import { notFound } from '../libs/Error.js';
 
 export interface Item {
   id: string;
@@ -60,7 +60,7 @@ export class ItemStore {
     const dbItem = resDBItems.getValue()[0];
 
     if (!dbItem) {
-      return new NotFound(
+      return notFound(
         `ItemStore.getBySlug Item not found ${userId} ${itemSlug}.`,
       );
     }
@@ -88,7 +88,7 @@ export class ItemStore {
     const dbItem = resDBItems.getValue()[0];
 
     if (!dbItem) {
-      return new NotFound(
+      return notFound(
         `ItemStore.getById Item not found ${userId} ${itemId}.`,
       );
     }
@@ -114,7 +114,7 @@ export class ItemStore {
     }
 
     if (!resDB.getValue()) {
-      return new NotFound(
+      return notFound(
         `ItemStore.deleteBySlug Item not found ${userId} ${itemSlug}.`,
       );
     }

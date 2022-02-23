@@ -3,7 +3,7 @@ import { Knex as KnexType } from 'knex';
 import { PostgreSQLClient } from '../clients/PostgreSQLClient.js';
 import { contextualizeError } from '../libs/contextualizeError.js';
 import { Result } from '../libs/Result.js';
-import { NotFound } from '../libs/Error.js';
+import { notFound } from '../libs/Error.js';
 
 interface DBUser {
   id: string;
@@ -51,7 +51,7 @@ export class UserStore {
     const dbUser = resDBUsers.getValue()[0];
 
     if (!dbUser) {
-      return new NotFound(
+      return notFound(
         `UserStore.get User not found ${username}.`,
       );
     }

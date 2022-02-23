@@ -2,7 +2,7 @@ import joi from 'joi';
 
 import { AppRequest } from '../../types/AppController.js';
 import { Result } from '../../libs/Result.js';
-import { BadRequest } from '../../libs/Error.js';
+import { badRequest } from '../../libs/Error.js';
 
 const schema = joi.object({
   childItemTitle: joi.string().required(),
@@ -20,7 +20,7 @@ export function toCreateItemRequest(request: AppRequest) {
   });
 
   if (response.error) {
-    return new BadRequest(response.error.message);
+    return badRequest(response.error.message);
   }
 
   return Result.success(response.value);

@@ -11,26 +11,42 @@ export class AppError extends Error {
   }
 }
 
-export class Unexpected extends ResultFailure<AppError> {
+export class Unexpected extends AppError {
   constructor(message: string) {
-    super(new AppError(message, Code.UnexpectedError));
+    super(message, Code.UnexpectedError);
   }
 }
 
-export class NotFound extends ResultFailure<AppError> {
+export class NotFound extends AppError {
   constructor(message: string) {
-    super(new AppError(message, Code.NotFound));
+    super(message, Code.NotFound);
   }
 }
 
-export class BadRequest extends ResultFailure<AppError> {
+export class BadRequest extends AppError {
   constructor(message: string) {
-    super(new AppError(message, Code.BadRequest));
+    super(message, Code.BadRequest);
   }
 }
 
-export class InvalidArgument extends ResultFailure<AppError> {
+export class InvalidArgument extends AppError {
   constructor(message: string) {
-    super(new AppError(message, Code.InvalidArgument));
+    super(message, Code.InvalidArgument);
   }
+}
+
+export function unexpected(message: string) {
+  return new ResultFailure(new Unexpected(message));
+}
+
+export function notFound(message: string) {
+  return new ResultFailure(new NotFound(message));
+}
+
+export function badRequest(message: string) {
+  return new ResultFailure(new BadRequest(message));
+}
+
+export function invalidArgument(message: string) {
+  return new ResultFailure(new InvalidArgument(message));
 }

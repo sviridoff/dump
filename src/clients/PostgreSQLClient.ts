@@ -1,7 +1,7 @@
 import Knex, { Knex as KnexType } from 'knex';
 
 import { Result } from '../libs/Result.js';
-import { Unexpected } from '../libs/Error.js';
+import { unexpected } from '../libs/Error.js';
 
 type Query = (knex: KnexType) => Promise<any>;
 
@@ -33,7 +33,7 @@ export class PostgreSQLClient {
 
       return Result.success(response);
     } catch (error: any) {
-      return new Unexpected(
+      return unexpected(
         `PostgreSQLClient.query ${error.message}`,
       );
     }
