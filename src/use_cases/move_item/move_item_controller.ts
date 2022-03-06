@@ -7,7 +7,7 @@ import { ItemStore } from '../../stores/item_store/item_store.js';
 import { UserStore } from '../../stores/user_store/user_store.js';
 import { MoveItemPresenter } from './move_item_presenter.js';
 import { urlToShowItem } from '../show_item/map_show_item_routes.js';
-import { toMoveItemRequest } from './to_move_item_request.js';
+import { MoveItemRequest } from './move_item_request.js';
 import { Result } from '../../libs/result.js';
 
 export class MoveItemController implements AppController {
@@ -51,10 +51,11 @@ export class MoveItemController implements AppController {
       });
     }
 
-    const moveItemRequest = toMoveItemRequest(request);
+    const resMoveItemRequest =
+      MoveItemRequest.resFromRequest(request);
 
-    if (moveItemRequest.isFailure) {
-      return moveItemRequest;
+    if (resMoveItemRequest.isFailure) {
+      return resMoveItemRequest;
     }
 
     return Result.success({
@@ -62,7 +63,7 @@ export class MoveItemController implements AppController {
     });
 
     /*
-    const { toItemSlug } = moveItemRequest.getValue();
+    const { toItemSlug } = resMoveItemRequest.getValue();
 
     const res = await this.itemStore.move(
       itemSlug,

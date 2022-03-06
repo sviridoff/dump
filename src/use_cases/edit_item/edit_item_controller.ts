@@ -6,7 +6,7 @@ import {
 import { ItemStore } from '../../stores/item_store/item_store.js';
 import { UserStore } from '../../stores/user_store/user_store.js';
 import { EditItemPresenter } from './edit_item_presenter.js';
-import { toEditItemRequest } from './to_edit_item_request.js';
+import { EditItemRequest } from './edit_item_request.js';
 import { toSlug } from '../../libs/to_slug.js';
 import { urlToShowItem } from '../show_item/map_show_item_routes.js';
 import { Result } from '../../libs/result.js';
@@ -51,7 +51,8 @@ export class EditItemController implements AppController {
 
     // POST
 
-    const resEditItemRequest = toEditItemRequest(request);
+    const resEditItemRequest =
+      EditItemRequest.resFromRequest(request);
 
     if (resEditItemRequest.isFailure) {
       return resEditItemRequest;
