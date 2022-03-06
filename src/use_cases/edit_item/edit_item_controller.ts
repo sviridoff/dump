@@ -3,8 +3,8 @@ import {
   AppReply,
   AppRequest,
 } from '../../types/app_controller.js';
-import { ItemStore } from '../../stores/item_store.js';
-import { UserStore } from '../../stores/user_store.js';
+import { ItemStore } from '../../stores/item_store/item_store.js';
+import { UserStore } from '../../stores/user_store/user_store.js';
 import { toEditItemPresenter } from './to_edit_item_presenter.js';
 import { toEditItemRequest } from './to_edit_item_request.js';
 import { toSlug } from '../../libs/to_slug.js';

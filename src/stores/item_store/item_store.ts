@@ -1,91 +1,62 @@
 import { randomUUID } from 'node:crypto';
 import { Knex as KnexType } from 'knex';
 
-import { PostgreSQLClient } from '../clients/postgre_sql_client.js';
-import { toSlug } from '../libs/to_slug.js';
-import { contextualizeError } from '../libs/contextualize_error.js';
-import { Result } from '../libs/result.js';
-import { notFound } from '../libs/error.js';
-
-export interface Item {
-  id: string;
-  slug: string;
-  title: string;
-  isPrivate: boolean;
-}
-
-interface DBItem {
-  id: string;
-  title: string;
-  slug: string;
-  user_id: string;
-  is_private: boolean;
-  created_at: string;
-  updated_at: string;
-}
-
-function toItem(dbMainItem: DBItem) {
-  return {
-    id: dbMainItem.id,
-    slug: dbMainItem.slug,
-    title: dbMainItem.title,
-    isPrivate: dbMainItem.is_private,
-  };
-}
-
-function toItems(dbChildItems: DBItem[]): Item[] {
-  return dbChildItems.map(toItem);
-}
+import { PostgreSQLClient } from '../../clients/postgre_sql_client.js';
+import { toSlug } from '../../libs/to_slug.js';
+import { contextualizeError } from '../../libs/contextualize_error.js';
+import { Result } from '../../libs/result.js';
+import { notFound } from '../../libs/error.js';
+import { Item, SRCItem } from './item.js';
 
 export class ItemStore {
   constructor(private postgreSQLClient: PostgreSQLClient) {}
 
   async getBySlug(userId: string, itemSlug: string) {
-    const resDBItems = await this.postgreSQLClient.query<
-      DBItem[]
+    const resSRCItems = await this.postgreSQLClient.query<
+      SRCItem[]
     >((knex: KnexType) => {
       return knex
         .where({ slug: itemSlug, user_id: userId })
         .select('*')
         .from('item');
     });
-    if (resDBItems.isFailure) {
+    if (resSRCItems.isFailure) {
       return contextualizeError(
-        resDBItems,
+        resSRCItems,
         'ItemStore.getBySlug',
       );
     }
-    const dbItem = resDBItems.getValue()[0];
-    if (!dbItem) {
+    const srcItem = resSRCItems.getValue()[0];
+    if (!srcItem) {
       return notFound(
         `ItemStore.getBySlug Item not found ${userId} ${itemSlug}.`,
       );
     }
-    return Result.success(toItem(dbItem));
+    return Result.success(Item.fromSRC(srcItem));
   }
 
   async getById(userId: string, itemId: string) {
-    const resDBItems = await this.postgreSQLClient.query<
-      DBItem[]
+    const resSRCItems = await this.postgreSQLClient.query<
+      SRCItem[]
     >((knex: KnexType) => {
       return knex
         .where({ id: itemId, user_id: userId })
         .select('*')
         .from('item');
     });
-    if (resDBItems.isFailure) {
+    if (resSRCItems.isFailure) {
       return contextualizeError(
-        resDBItems,
+        resSRCItems,
         'ItemStore.getById',
       );
     }
-    const dbItem = resDBItems.getValue()[0];
-    if (!dbItem) {
+    const srcItem = resSRCItems.getValue()[0];
+    if (!srcItem) {
       return notFound(
         `ItemStore.getById Item not found ${userId} ${itemId}.`,
       );
     }
-    return Result.success(toItem(dbItem));
+    return Result.success(Item.fromSRC(srcItem));
   }
 
   async deleteBySlug(userId: string, itemSlug: string) {
@@ -113,7 +84,7 @@ export class ItemStore {
 
   async getChild(parentItemId: string) {
     const resDBChildItems =
-      await this.postgreSQLClient.query<DBItem[]>(
+      await this.postgreSQLClient.query<SRCItem[]>(
         (knex: KnexType) => {
           const dbChildItemIds = knex
             .where({ parent_item_id: parentItemId })
@@ -132,7 +103,7 @@ export class ItemStore {
       );
     }
     const dbChildItems = resDBChildItems.getValue();
-    return Result.success(toItems(dbChildItems));
+    return Result.success(Item.fromSRCS(dbChildItems));
   }
 
   async create(
@@ -238,8 +209,8 @@ export class ItemStore {
   */
 
   async getExcept(userId: string, itemSlug: string) {
-    const resDBItems = await this.postgreSQLClient.query<
-      DBItem[]
+    const resSRCItems = await this.postgreSQLClient.query<
+      SRCItem[]
     >((knex: KnexType) => {
       return knex
         .where('user_id', userId)
@@ -247,13 +218,13 @@ export class ItemStore {
         .select('*')
         .from('item');
     });
-    if (resDBItems.isFailure) {
+    if (resSRCItems.isFailure) {
       return contextualizeError(
-        resDBItems,
+        resSRCItems,
         'ItemStore.list',
       );
     }
-    const dbItems = resDBItems.getValue();
-    return Result.success(toItems(dbItems));
+    const dbItems = resSRCItems.getValue();
+    return Result.success(Item.fromSRCS(dbItems));
   }
 }

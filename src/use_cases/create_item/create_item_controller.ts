@@ -3,8 +3,8 @@ import {
   AppReply,
   AppRequest,
 } from '../../types/app_controller.js';
-import { ItemStore } from '../../stores/item_store.js';
-import { UserStore } from '../../stores/user_store.js';
+import { ItemStore } from '../../stores/item_store/item_store.js';
+import { UserStore } from '../../stores/user_store/user_store.js';
 import { urlToShowItem } from '../show_item/map_show_item_routes.js';
 import { toCreateItemPresenter } from './to_create_item_presenter.js';
 import { toCreateItemRequest } from './to_create_item_request.js';

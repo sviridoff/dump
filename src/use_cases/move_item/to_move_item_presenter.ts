@@ -1,5 +1,5 @@
-import { Item } from '../../stores/item_store.js';
-import { User } from '../../stores/user_store.js';
+import { Item } from '../../stores/item_store/item.js';
+import { User } from '../../stores/user_store/user.js';
 
 interface MoveItemPresenter {
   user: User;

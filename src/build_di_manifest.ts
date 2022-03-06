@@ -4,8 +4,8 @@ import { ManifestItem } from '@daisugi/kado';
 import { PostgreSQLClient } from './clients/postgre_sql_client.js';
 
 // Stores.
-import { ItemStore } from './stores/item_store.js';
-import { UserStore } from './stores/user_store.js';
+import { ItemStore } from './stores/item_store/item_store.js';
+import { UserStore } from './stores/user_store/user_store.js';
 
 // Show item.
 import { ShowItemController } from './use_cases/show_item/show_item_controller.js';
