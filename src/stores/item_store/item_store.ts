@@ -3,9 +3,11 @@ import { Knex as KnexType } from 'knex';
 
 import { PostgreSQLClient } from '../../clients/postgre_sql_client.js';
 import { toSlug } from '../../libs/to_slug.js';
-import { contextualizeError } from '../../libs/contextualize_error.js';
 import { Result } from '../../libs/result.js';
-import { notFound } from '../../libs/error.js';
+import {
+  notFound,
+  contextualizeError,
+} from '../../libs/error.js';
 import { Item, SRCItem } from './item.js';
 
 export class ItemStore {
@@ -32,7 +34,7 @@ export class ItemStore {
         `ItemStore.getBySlug Item not found ${userId} ${itemSlug}.`,
       );
     }
-    return Result.success(Item.fromSRC(srcItem));
+    return Item.resFromSRC(srcItem);
   }
 
   async getById(userId: string, itemId: string) {
@@ -56,7 +58,7 @@ export class ItemStore {
         `ItemStore.getById Item not found ${userId} ${itemId}.`,
       );
     }
-    return Result.success(Item.fromSRC(srcItem));
+    return Item.resFromSRC(srcItem);
   }
 
   async deleteBySlug(userId: string, itemSlug: string) {
@@ -103,7 +105,7 @@ export class ItemStore {
       );
     }
     const dbChildItems = resDBChildItems.getValue();
-    return Result.success(Item.fromSRCS(dbChildItems));
+    return Item.resFromSRCS(dbChildItems);
   }
 
   async create(
@@ -142,7 +144,7 @@ export class ItemStore {
         'ItemStore.create',
       );
     }
-    return Result.success(resResponse.getValue());
+    return resResponse;
   }
 
   async edit(
@@ -169,7 +171,7 @@ export class ItemStore {
         'ItemStore.edit',
       );
     }
-    return Result.success(resResponse.getValue());
+    return resResponse;
   }
 
   /*
@@ -225,6 +227,6 @@ export class ItemStore {
       );
     }
     const dbItems = resSRCItems.getValue();
-    return Result.success(Item.fromSRCS(dbItems));
+    return Item.resFromSRCS(dbItems);
   }
 }

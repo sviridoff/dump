@@ -5,8 +5,7 @@ import {
 } from '../../types/app_controller.js';
 import { ItemStore } from '../../stores/item_store/item_store.js';
 import { UserStore } from '../../stores/user_store/user_store.js';
-import { toMoveItemPresenter } from './to_move_item_presenter.js';
-import { resultPromiseAll } from '../../libs/result_promise_all.js';
+import { MoveItemPresenter } from './move_item_presenter.js';
 import { urlToShowItem } from '../show_item/map_show_item_routes.js';
 import { toMoveItemRequest } from './to_move_item_request.js';
 import { Result } from '../../libs/result.js';
@@ -30,7 +29,7 @@ export class MoveItemController implements AppController {
 
       const userId = resUser.getValue().id;
 
-      const res = await resultPromiseAll([
+      const res = await Result.promiseAll([
         this.itemStore.getBySlug(userId, itemSlug),
         this.itemStore.getExcept(userId, itemSlug),
       ]);
@@ -44,7 +43,7 @@ export class MoveItemController implements AppController {
       return Result.success({
         templatePath:
           'use_cases/move_item/templates/move_item.ejs',
-        templateData: toMoveItemPresenter(
+        templateData: new MoveItemPresenter(
           item,
           items,
           resUser.getValue(),

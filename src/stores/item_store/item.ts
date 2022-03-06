@@ -1,3 +1,5 @@
+import { Result } from '../../libs/result.js';
+
 export interface SRCItem {
   id: string;
   title: string;
@@ -16,7 +18,7 @@ export class Item {
     public isPrivate: boolean,
   ) {}
 
-  static fromSRC(srcItem: SRCItem): Item {
+  static fromSRC(srcItem: SRCItem) {
     return new Item(
       srcItem.id,
       srcItem.slug,
@@ -25,7 +27,11 @@ export class Item {
     );
   }
 
-  static fromSRCS(srcItems: SRCItem[]): Item[] {
-    return srcItems.map(Item.fromSRC);
+  static resFromSRC(srcItem: SRCItem) {
+    return Result.success(Item.fromSRC(srcItem));
+  }
+
+  static resFromSRCS(srcItems: SRCItem[]) {
+    return Result.success(srcItems.map(Item.fromSRC));
   }
 }

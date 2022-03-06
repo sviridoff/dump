@@ -1,6 +1,15 @@
 import { Code } from '@daisugi/kintsugi';
 import { ResultFailure } from './result.js';
 
+export function contextualizeError<
+  T extends ResultFailure<AppError>,
+>(resultFail: T, prefixMessage: string) {
+  resultFail.getError().message = `${prefixMessage} ${
+    resultFail.getError().message
+  }.`;
+  return resultFail;
+}
+
 export class AppError extends Error {
   constructor(message: string, readonly code: string) {
     super(message);

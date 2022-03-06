@@ -1,3 +1,5 @@
+import { Result } from '../../libs/result.js';
+
 export interface SRCUser {
   id: string;
   username: string;
@@ -14,7 +16,7 @@ export class User {
     public itemId: string,
   ) {}
 
-  static fromSRC(srcUser: SRCUser): User {
+  static fromSRC(srcUser: SRCUser) {
     return new User(
       srcUser.id,
       srcUser.username,
@@ -22,7 +24,11 @@ export class User {
     );
   }
 
-  static fromSRCS(srcUsers: SRCUser[]): User[] {
-    return srcUsers.map(User.fromSRC);
+  static resFromSRC(srcUser: SRCUser) {
+    return Result.success(User.fromSRC(srcUser));
+  }
+
+  static resFromSRCS(srcUsers: SRCUser[]) {
+    return Result.success(srcUsers.map(User.fromSRC));
   }
 }

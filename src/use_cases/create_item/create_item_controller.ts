@@ -6,7 +6,7 @@ import {
 import { ItemStore } from '../../stores/item_store/item_store.js';
 import { UserStore } from '../../stores/user_store/user_store.js';
 import { urlToShowItem } from '../show_item/map_show_item_routes.js';
-import { toCreateItemPresenter } from './to_create_item_presenter.js';
+import { CreateItemPresenter } from './create_item_presenter.js';
 import { toCreateItemRequest } from './to_create_item_request.js';
 import { toSlug } from '../../libs/to_slug.js';
 import { Result } from '../../libs/result.js';
@@ -42,7 +42,7 @@ export class CreateItemController implements AppController {
       return Result.success({
         templatePath:
           'use_cases/create_item/templates/create_item.ejs',
-        templateData: toCreateItemPresenter(
+        templateData: new CreateItemPresenter(
           resItem.getValue(),
           resUser.getValue(),
         ),
@@ -72,7 +72,7 @@ export class CreateItemController implements AppController {
       return Result.success({
         templatePath:
           'use_cases/create_item/templates/create_item.ejs',
-        templateData: toCreateItemPresenter(
+        templateData: new CreateItemPresenter(
           resItem.getValue(),
           resUser.getValue(),
         ),

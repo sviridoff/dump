@@ -3,7 +3,7 @@ import {
   AppReply,
   AppRequest,
 } from '../../types/app_controller.js';
-import { toShowItemPresenter } from './to_show_item_presenter.js';
+import { ShowItemPresenter } from './show_item_presenter.js';
 import { ItemStore } from '../../stores/item_store/item_store.js';
 import { UserStore } from '../../stores/user_store/user_store.js';
 import { Result } from '../../libs/result.js';
@@ -45,7 +45,7 @@ export class ShowItemController implements AppController {
     return Result.success({
       templatePath:
         'use_cases/show_item/templates/show_item.ejs',
-      templateData: toShowItemPresenter(
+      templateData: new ShowItemPresenter(
         resItem.getValue(),
         resItemChild.getValue(),
         resUser.getValue(),

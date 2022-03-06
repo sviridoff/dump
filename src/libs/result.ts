@@ -92,6 +92,18 @@ export class Result<T, U> {
 }
 */
 
+async function handleResult(
+  whenResult: Promise<
+    ResultFailure<any> | ResultSuccess<any>
+  >,
+) {
+  const response = await whenResult;
+  if (response.isFailure) {
+    return Promise.reject(response);
+  }
+  return response.getValue();
+}
+
 export class ResultSuccess<T> {
   isSuccess = true as const;
   isFailure = false as const;
@@ -128,5 +140,19 @@ export class Result {
   }
   static failure<T>(error: T) {
     return new ResultFailure<T>(error);
+  }
+  static async promiseAll(
+    results: Promise<
+      ResultFailure<any> | ResultSuccess<any>
+    >[],
+  ) {
+    const handledResults = results.map(handleResult);
+    try {
+      const values = await Promise.all(handledResults);
+      return Result.success(values);
+    } catch (error: any) {
+      // We propagate result error.
+      return error;
+    }
   }
 }
