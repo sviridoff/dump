@@ -15,9 +15,9 @@ import { kado, Container, Token } from '@daisugi/kado';
 import {
   buildDIManifest,
   diRoutesManifestTokens,
-} from './buildDIManifest.js';
-import { validateEnvs } from './validateEnvs.js';
-import { AppRoute } from './types/AppRoute.js';
+} from './build_di_manifest.js';
+import { validateEnvs } from './validate_envs.js';
+import { AppRoute } from './types/app_route.js';
 
 const __dirname = path.dirname(
   fileURLToPath(import.meta.url),
