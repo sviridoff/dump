@@ -31,7 +31,7 @@ export class Item {
     return Result.success(Item.fromSRC(srcItem));
   }
 
-  static resFromSRCS(srcItems: SRCItem[]) {
+  static resFromSRCList(srcItems: SRCItem[]) {
     return Result.success(srcItems.map(Item.fromSRC));
   }
 }

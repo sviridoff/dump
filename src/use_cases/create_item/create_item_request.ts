@@ -2,7 +2,7 @@ import joi from 'joi';
 
 import { AppRequest } from '../../types/app_controller.js';
 import { Result } from '../../libs/result.js';
-import { badRequest } from '../../libs/error.js';
+import { invalidArgument } from '../../libs/error.js';
 
 export class CreateItemRequest {
   static #schema = joi.object({
@@ -26,7 +26,7 @@ export class CreateItemRequest {
       },
     );
     if (response.error) {
-      return badRequest(response.error.message);
+      return invalidArgument(response.error.message);
     }
     return Result.success(
       new CreateItemRequest(

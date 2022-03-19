@@ -28,7 +28,7 @@ export class User {
     return Result.success(User.fromSRC(srcUser));
   }
 
-  static resFromSRCS(srcUsers: SRCUser[]) {
+  static resFromSRCList(srcUsers: SRCUser[]) {
     return Result.success(srcUsers.map(User.fromSRC));
   }
 }

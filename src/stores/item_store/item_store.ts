@@ -22,19 +22,23 @@ export class ItemStore {
         .select('*')
         .from('item');
     });
-    if (resSRCItems.isFailure) {
-      return contextualizeError(
-        resSRCItems,
-        'ItemStore.getBySlug',
-      );
-    }
-    const srcItem = resSRCItems.getValue()[0];
-    if (!srcItem) {
-      return notFound(
-        `ItemStore.getBySlug Item not found ${userId} ${itemSlug}.`,
-      );
-    }
-    return Item.resFromSRC(srcItem);
+
+    return resSRCItems
+      .elseChain((error) => {
+        return contextualizeError(
+          error,
+          'ItemStore.getBySlug',
+        );
+      })
+      .chain((srcItemValue) => {
+        const srcItem = srcItemValue[0];
+        if (!srcItem) {
+          return notFound(
+            `ItemStore.getBySlug Item not found ${userId} ${itemSlug}.`,
+          );
+        }
+        return Item.resFromSRC(srcItem);
+      });
   }
 
   async getById(userId: string, itemId: string) {
@@ -48,7 +52,7 @@ export class ItemStore {
     });
     if (resSRCItems.isFailure) {
       return contextualizeError(
-        resSRCItems,
+        resSRCItems.getError(),
         'ItemStore.getById',
       );
     }
@@ -72,7 +76,7 @@ export class ItemStore {
     );
     if (resDB.isFailure) {
       return contextualizeError(
-        resDB,
+        resDB.getError(),
         'ItemStore.deleteBySlug',
       );
     }
@@ -100,12 +104,12 @@ export class ItemStore {
       );
     if (resDBChildItems.isFailure) {
       return contextualizeError(
-        resDBChildItems,
+        resDBChildItems.getError(),
         'ItemStore.getChild',
       );
     }
     const dbChildItems = resDBChildItems.getValue();
-    return Item.resFromSRCS(dbChildItems);
+    return Item.resFromSRCList(dbChildItems);
   }
 
   async create(
@@ -140,7 +144,7 @@ export class ItemStore {
     );
     if (resResponse.isFailure) {
       return contextualizeError(
-        resResponse,
+        resResponse.getError(),
         'ItemStore.create',
       );
     }
@@ -167,7 +171,7 @@ export class ItemStore {
     );
     if (resResponse.isFailure) {
       return contextualizeError(
-        resResponse,
+        resResponse.getError(),
         'ItemStore.edit',
       );
     }
@@ -222,11 +226,11 @@ export class ItemStore {
     });
     if (resSRCItems.isFailure) {
       return contextualizeError(
-        resSRCItems,
+        resSRCItems.getError(),
         'ItemStore.list',
       );
     }
     const dbItems = resSRCItems.getValue();
-    return Item.resFromSRCS(dbItems);
+    return Item.resFromSRCList(dbItems);
   }
 }

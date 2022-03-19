@@ -21,7 +21,7 @@ export class UserStore {
     });
     if (resSRCUsers.isFailure) {
       return contextualizeError(
-        resSRCUsers,
+        resSRCUsers.getError(),
         'UserStore.get',
       );
     }

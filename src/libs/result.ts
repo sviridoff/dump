@@ -117,6 +117,12 @@ export class ResultSuccess<T> {
   getError() {
     throw new Error('Cannot get the error of success.');
   }
+  chain<V>(fn: (value: T) => V) {
+    return fn(this.#value);
+  }
+  elseChain() {
+    return this;
+  }
 }
 
 export class ResultFailure<T> {
@@ -131,6 +137,12 @@ export class ResultFailure<T> {
   }
   getError() {
     return this.#error;
+  }
+  chain() {
+    return this;
+  }
+  elseChain<V>(fn: (value: T) => V) {
+    return fn(this.#error);
   }
 }
 
