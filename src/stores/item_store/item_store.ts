@@ -14,16 +14,15 @@ export class ItemStore {
   constructor(private postgreSQLClient: PostgreSQLClient) {}
 
   async getBySlug(userId: string, itemSlug: string) {
-    const resSRCItems = await this.postgreSQLClient.query<
-      SRCItem[]
-    >((knex: KnexType) => {
-      return knex
-        .where({ slug: itemSlug, user_id: userId })
-        .select('*')
-        .from('item');
-    });
-
-    return resSRCItems
+    const request = this.postgreSQLClient.query<SRCItem[]>(
+      (knex: KnexType) => {
+        return knex
+          .where({ slug: itemSlug, user_id: userId })
+          .select('*')
+          .from('item');
+      },
+    );
+    return Result.fromPromise(request)
       .elseChain((error) => {
         return contextualizeError(
           error,

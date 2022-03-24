@@ -1,97 +1,3 @@
-/*
-const ResultUnitType = {
-  Success: 0,
-  Error: 1,
-} as const;
-
-type ResultUnitType =
-  typeof ResultUnitType[keyof typeof ResultUnitType];
-
-export class Result<T, U> {
-  #type: ResultUnitType;
-  #error: U;
-  #value: T;
-  constructor(type: ResultUnitType, value: T, error: U) {
-    this.#type = type;
-    this.#value = value;
-    this.#error = error;
-  }
-  static success<T>(value: T) {
-    return new Result(ResultUnitType.Success, value, null);
-  }
-  static failure<U>(error: U) {
-    return new Result(ResultUnitType.Error, null, error);
-  }
-  isSuccess() {
-    return this.#type === ResultUnitType.Success;
-  }
-  isFailure() {
-    return this.#type === ResultUnitType.Error;
-  }
-  getValue() {
-    if (this.isFailure()) {
-      throw new Error('Cannot get the value of failure.');
-    }
-    return this.#value;
-  }
-  getError() {
-    if (this.isSuccess()) {
-      throw new Error('Cannot get the error of success.');
-    }
-    return this.#error;
-  }
-  toJSON() {
-    return JSON.stringify({
-      type: this.#type,
-      value: this.#value,
-      error: this.#error,
-    });
-  }
-  static fromThrowable() {
-    // TODO
-  }
-  static fromJSON(json: string) {
-    const object = JSON.parse(json);
-    return object.type === ResultUnitType.Success
-      ? Result.success(object.getValue())
-      : Result.failure(object.getError());
-  }
-  map<V>(fn: (value: T) => V) {
-    if (this.isFailure()) {
-      return this;
-    }
-    return Result.success(fn(this.#value));
-  }
-  chain<V>(fn: (value: T) => V) {
-    if (this.isFailure()) {
-      return this;
-    }
-    return fn(this.#value);
-  }
-  elseMap<V>(fn: (value: U) => V) {
-    if (this.isSuccess()) {
-      return this;
-    }
-    return Result.success(fn(this.#error));
-  }
-  elseChain<V>(fn: (value: U) => V) {
-    if (this.isSuccess()) {
-      return this;
-    }
-    return fn(this.#error);
-  }
-  unsafeUnwrap() {
-    return this.isSuccess() ? this.#value : this.#error;
-  }
-  unwrapOr<V>(fn: (value: U) => V) {
-    if (this.isSuccess()) {
-      this.#value;
-    }
-    return fn(this.#error);
-  }
-}
-*/
-
 async function handleResult(
   whenResult: Promise<
     ResultFailure<any> | ResultSuccess<any>
@@ -123,6 +29,21 @@ export class ResultSuccess<T> {
   elseChain() {
     return this;
   }
+  map<V>(fn: (value: T) => V) {
+    return new ResultSuccess(fn(this.#value));
+  }
+  elseMap() {
+    return this;
+  }
+  unsafeUnwrap() {
+    return this.#value;
+  }
+  toJSON() {
+    return JSON.stringify({
+      value: this.#value,
+      isSuccess: this.isSuccess,
+    });
+  }
 }
 
 export class ResultFailure<T> {
@@ -143,6 +64,42 @@ export class ResultFailure<T> {
   }
   elseChain<V>(fn: (value: T) => V) {
     return fn(this.#error);
+  }
+  map() {
+    return this;
+  }
+  elseMap<V>(fn: (value: T) => V) {
+    return new ResultSuccess(fn(this.#error));
+  }
+  unsafeUnwrap() {
+    return this.#error;
+  }
+  toJSON() {
+    return JSON.stringify({
+      error: this.#error,
+      isSuccess: this.isSuccess,
+    });
+  }
+}
+
+export class AsyncResult<T> {
+  #whenResult: Promise<T>;
+  constructor(whenResult: Promise<T>) {
+    this.#whenResult = whenResult;
+  }
+  chain<V>(fn: (value: T) => V) {
+    return new AsyncResult<V>(
+      this.#whenResult.then((result) => {
+        return result.chain(fn);
+      }),
+    );
+  }
+  elseChain<V>(fn: (value: T) => V) {
+    return new AsyncResult<V>(
+      this.#whenResult.then((result) => {
+        return result.elseChain(fn);
+      }),
+    );
   }
 }
 
@@ -166,5 +123,14 @@ export class Result {
       // We propagate result error.
       return error;
     }
+  }
+  static fromPromise<T>(whenResult: Promise<T>) {
+    return new AsyncResult<T>(whenResult);
+  }
+  static fromJSON(json: string) {
+    const pojo = JSON.parse(json);
+    return pojo.isSuccess
+      ? new ResultSuccess(pojo.value)
+      : new ResultFailure(pojo.error);
   }
 }
