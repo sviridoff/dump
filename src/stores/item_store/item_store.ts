@@ -13,7 +13,7 @@ import { Item, SRCItem } from './item.js';
 export class ItemStore {
   constructor(private postgreSQLClient: PostgreSQLClient) {}
 
-  async getBySlug(userId: string, itemSlug: string) {
+  getBySlug(userId: string, itemSlug: string) {
     const request = this.postgreSQLClient.query<SRCItem[]>(
       (knex: KnexType) => {
         return knex
@@ -49,19 +49,23 @@ export class ItemStore {
         .select('*')
         .from('item');
     });
-    if (resSRCItems.isFailure) {
-      return contextualizeError(
-        resSRCItems.getError(),
-        'ItemStore.getById',
-      );
-    }
-    const srcItem = resSRCItems.getValue()[0];
-    if (!srcItem) {
-      return notFound(
-        `ItemStore.getById Item not found ${userId} ${itemId}.`,
-      );
-    }
-    return Item.resFromSRC(srcItem);
+
+    return resSRCItems
+      .elseChain((error) => {
+        return contextualizeError(
+          error,
+          'ItemStore.getById',
+        );
+      })
+      .chain((srcItemValue) => {
+        const srcItem = srcItemValue[0];
+        if (!srcItem) {
+          return notFound(
+            `ItemStore.getBySlug Item not found ${userId} ${itemId}.`,
+          );
+        }
+        return Item.resFromSRC(srcItem);
+      });
   }
 
   async deleteBySlug(userId: string, itemSlug: string) {

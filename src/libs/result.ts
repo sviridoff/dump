@@ -62,13 +62,13 @@ export class ResultFailure<T> {
   chain() {
     return this;
   }
-  elseChain<V>(fn: (value: T) => V) {
+  elseChain<V>(fn: (error: T) => V) {
     return fn(this.#error);
   }
   map() {
     return this;
   }
-  elseMap<V>(fn: (value: T) => V) {
+  elseMap<V>(fn: (error: T) => V) {
     return new ResultSuccess(fn(this.#error));
   }
   unsafeUnwrap() {
@@ -82,21 +82,37 @@ export class ResultFailure<T> {
   }
 }
 
+type ExtractResultFailure<P> = P extends ResultFailure<
+  infer T
+>
+  ? T
+  : never;
+
+type ExtractResultSuccess<P> = P extends ResultSuccess<
+  infer T
+>
+  ? T
+  : never;
+
 export class AsyncResult<T> {
   #whenResult: Promise<T>;
   constructor(whenResult: Promise<T>) {
     this.#whenResult = whenResult;
   }
-  chain<V>(fn: (value: T) => V) {
-    return new AsyncResult<V>(
-      this.#whenResult.then((result) => {
+  chain<V>(
+    fn: (value: ExtractResultSuccess<T>) => V,
+  ): AsyncResult<V> {
+    return new AsyncResult(
+      this.#whenResult.then((result: any) => {
         return result.chain(fn);
       }),
     );
   }
-  elseChain<V>(fn: (value: T) => V) {
-    return new AsyncResult<V>(
-      this.#whenResult.then((result) => {
+  elseChain<V>(
+    fn: (error: ExtractResultFailure<T>) => V,
+  ): AsyncResult<V> {
+    return new AsyncResult(
+      this.#whenResult.then((result: any) => {
         return result.elseChain(fn);
       }),
     );
