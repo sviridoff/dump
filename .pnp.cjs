@@ -54,6 +54,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["pg", "virtual:850ec5dafba0b7e7fb341d89f9de476e4505ce2567691e593f8fa174e2cf9197a96177869fb182a02c6fbdb9872ed8316e4a019b8999326c0c6bde687335e50c#npm:8.7.1"],
             ["point-of-view", "npm:5.0.0"],
             ["prettier", "npm:2.5.1"],
+            ["prisma", "npm:3.11.1"],
             ["tsc-watch", "virtual:850ec5dafba0b7e7fb341d89f9de476e4505ce2567691e593f8fa174e2cf9197a96177869fb182a02c6fbdb9872ed8316e4a019b8999326c0c6bde687335e50c#npm:4.6.0"],
             ["typescript", "patch:typescript@npm%3A4.5.4#~builtin<compat/typescript>::version=4.5.4&hash=493e53"]
           ],
@@ -174,6 +175,15 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["@nodelib/fs.walk", "npm:1.2.8"],
             ["@nodelib/fs.scandir", "npm:2.1.5"],
             ["fastq", "npm:1.13.0"]
+          ],
+          "linkType": "HARD",
+        }]
+      ]],
+      ["@prisma/engines", [
+        ["npm:3.11.1-1.1a2506facaf1a4727b7c26850735e88ec779dee9", {
+          "packageLocation": "./.yarn/unplugged/@prisma-engines-npm-3.11.1-1.1a2506facaf1a4727b7c26850735e88ec779dee9-8e6609bf64/node_modules/@prisma/engines/",
+          "packageDependencies": [
+            ["@prisma/engines", "npm:3.11.1-1.1a2506facaf1a4727b7c26850735e88ec779dee9"]
           ],
           "linkType": "HARD",
         }]
@@ -919,6 +929,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["pg", "virtual:850ec5dafba0b7e7fb341d89f9de476e4505ce2567691e593f8fa174e2cf9197a96177869fb182a02c6fbdb9872ed8316e4a019b8999326c0c6bde687335e50c#npm:8.7.1"],
             ["point-of-view", "npm:5.0.0"],
             ["prettier", "npm:2.5.1"],
+            ["prisma", "npm:3.11.1"],
             ["tsc-watch", "virtual:850ec5dafba0b7e7fb341d89f9de476e4505ce2567691e593f8fa174e2cf9197a96177869fb182a02c6fbdb9872ed8316e4a019b8999326c0c6bde687335e50c#npm:4.6.0"],
             ["typescript", "patch:typescript@npm%3A4.5.4#~builtin<compat/typescript>::version=4.5.4&hash=493e53"]
           ],
@@ -2576,6 +2587,16 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           "packageDependencies": [
             ["prettier-linter-helpers", "npm:1.0.0"],
             ["fast-diff", "npm:1.2.0"]
+          ],
+          "linkType": "HARD",
+        }]
+      ]],
+      ["prisma", [
+        ["npm:3.11.1", {
+          "packageLocation": "./.yarn/unplugged/prisma-npm-3.11.1-e9ff539329/node_modules/prisma/",
+          "packageDependencies": [
+            ["prisma", "npm:3.11.1"],
+            ["@prisma/engines", "npm:3.11.1-1.1a2506facaf1a4727b7c26850735e88ec779dee9"]
           ],
           "linkType": "HARD",
         }]
